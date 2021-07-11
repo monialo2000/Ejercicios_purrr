@@ -1693,7 +1693,7 @@ for (i in seq_along(medias)) {
   output &lt;- c(output, rnorm(n, medias[[i]]))
 }
 str(output)</code></pre>
-<pre><code>##  num [1:171] -0.892 0.46 -0.318 0.123 0.866 ...</code></pre>
+<pre><code>##  num [1:156] 0.2148 1.5435 -1.7301 -0.0964 0.4211 ...</code></pre>
 <pre class="r"><code>#&gt;  num [1:138] 0.912 0.205 2.584 -0.789 0.588 ...</code></pre>
 <p><strong>Una mejor solución es guardar los resultados en una lista y luego combinarlos en un solo vector una vez que se complete el ciclo:</strong></p>
 <pre class="r"><code>out &lt;- vector(&quot;list&quot;, length(medias))
@@ -1703,15 +1703,15 @@ for (i in seq_along(medias)) {
 }
 str(out)</code></pre>
 <pre><code>## List of 3
-##  $ : num [1:55] -0.423 0.6912 1.1937 -0.0365 -1.2531 ...
-##  $ : num [1:6] 0.571 0.834 -0.288 4.744 1.153 ...
-##  $ : num 1.91</code></pre>
+##  $ : num [1:76] -0.546 0.773 0.181 -0.465 0.955 ...
+##  $ : num [1:81] 1.019 2.208 1.418 2.797 0.281 ...
+##  $ : num [1:41] 1.85 1.535 0.813 0.803 0.423 ...</code></pre>
 <pre class="r"><code>out_vector &lt;- unlist(out)
 str(out_vector)</code></pre>
-<pre><code>##  num [1:62] -0.423 0.6912 1.1937 -0.0365 -1.2531 ...</code></pre>
+<pre><code>##  num [1:198] -0.546 0.773 0.181 -0.465 0.955 ...</code></pre>
 <pre class="r"><code>out_vector &lt;- purrr::flatten_dbl(out)
 str(out_vector)</code></pre>
-<pre><code>##  num [1:62] -0.423 0.6912 1.1937 -0.0365 -1.2531 ...</code></pre>
+<pre><code>##  num [1:198] -0.546 0.773 0.181 -0.465 0.955 ...</code></pre>
 </div>
 <div id="while" class="section level3">
 <h3>While</h3>
@@ -1748,22 +1748,22 @@ lanzamientos</code></pre>
 <p>El patrón de iterar sobre un vector, hacer algo con cada elemento y guardar los resultados es tan común que el paquete purrr proporciona una familia de funciones que lo hacen por ti. Nunca debes sentirse mal por usar un bucle for en lugar de una función map. Las funciones map son un nivel superior de abstracción y puede llevar mucho tiempo entender cómo funcionan. Los principales beneficios de usar funciones como map () no es la velocidad, sino la claridad: hacen que tu código sea más fácil de escribir y leer.</p>
 <pre class="r"><code>map_dbl(df, mean) # media</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.6338933 0.4918897 0.4737270 0.4900365</code></pre>
+## 0.2919027 0.4831034 0.3957916 0.6294978</code></pre>
 <pre class="r"><code>map_dbl(df, median) # mediana</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.6995837 0.4832697 0.5238762 0.5569904</code></pre>
+## 0.2217211 0.4452235 0.3464426 0.6908610</code></pre>
 <pre class="r"><code>map_dbl(df, sd) # standard deviation</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.3044789 0.3071518 0.3202603 0.2896506</code></pre>
+## 0.3041091 0.2928925 0.3184042 0.2783187</code></pre>
 <pre class="r"><code>df %&gt;% map_dbl(mean)</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.6338933 0.4918897 0.4737270 0.4900365</code></pre>
+## 0.2919027 0.4831034 0.3957916 0.6294978</code></pre>
 <pre class="r"><code>df %&gt;% map_dbl(median)</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.6995837 0.4832697 0.5238762 0.5569904</code></pre>
+## 0.2217211 0.4452235 0.3464426 0.6908610</code></pre>
 <pre class="r"><code>df %&gt;% map_dbl(sd)</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.3044789 0.3071518 0.3202603 0.2896506</code></pre>
+## 0.3041091 0.2928925 0.3184042 0.2783187</code></pre>
 <div id="map_-vs.-col_resumen" class="section level3">
 <h3>map_ vs. col_resumen()</h3>
 <p>Existen algunas diferencias entre map _ * () y col_resumen():</p>
@@ -1775,7 +1775,7 @@ lanzamientos</code></pre>
 </ul>
 <pre class="r"><code>map_dbl(df, mean, trim = 0.5)</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.6995837 0.4832697 0.5238762 0.5569904</code></pre>
+## 0.2217211 0.4452235 0.3464426 0.6908610</code></pre>
 <pre class="r"><code>#&gt;           a           b           c           d 
 #&gt; -0.51850298  0.02779864  0.17295591 -0.61163819</code></pre>
 </div>
@@ -1869,20 +1869,20 @@ flores %&gt;%
 c(-10, 0, 10, 100) %&gt;% 
   map(~rnorm(n = 10, mean = .x))</code></pre>
 <pre><code>## [[1]]
-##  [1]  -9.901189 -10.046399 -10.933146  -9.613359  -9.168412 -10.446023
-##  [7]  -8.545144  -8.237562  -9.822956  -9.799730
+##  [1] -11.847329  -8.078182  -9.909160 -11.059785 -10.204016 -10.178103
+##  [7]  -9.324141  -9.110698  -7.921281  -9.917538
 ## 
 ## [[2]]
-##  [1]  1.3776700 -0.3074491  1.8565031  0.3240290  1.7165722 -0.6585325
-##  [7] -0.7072584 -0.4444147  0.3608074 -0.6168656
+##  [1]  0.15834057 -0.98265282  0.57292405  0.59446503 -0.94719282  0.22077709
+##  [7] -0.67023266 -0.09287585  0.65395169 -0.10087918
 ## 
 ## [[3]]
-##  [1]  8.785981  8.327997 10.033328  9.835106  9.839985 10.845467  8.266435
-##  [8]  9.414851  7.808214  9.836104
+##  [1] 10.475091 10.980791  9.247874 11.663322  9.526361 10.531030 10.296370
+##  [8]  9.175094  9.948280  9.416680
 ## 
 ## [[4]]
-##  [1]  99.61485  99.13823  99.04194  98.49758 100.55542 100.27653 101.34975
-##  [8] 100.14948 100.44680 101.62508</code></pre>
+##  [1]  98.34144  99.66115 101.16101 100.11430  98.78349 101.70857 100.21557
+##  [8]  98.28519  99.79933  99.39067</code></pre>
 <pre class="r"><code>#2. Cómo puedes crear un vector tal que para cada columna en un data frame indique si corresponde o no a un factor?
 
 flores %&gt;% 
@@ -1895,37 +1895,37 @@ flores %&gt;%
 1:5 %&gt;% 
   map(runif)</code></pre>
 <pre><code>## [[1]]
-## [1] 0.3939805
+## [1] 0.6307507
 ## 
 ## [[2]]
-## [1] 0.3140530 0.5135788
+## [1] 0.2063893 0.7176177
 ## 
 ## [[3]]
-## [1] 0.3839007 0.1294007 0.8142721
+## [1] 0.3618515 0.1829044 0.8563607
 ## 
 ## [[4]]
-## [1] 0.1078535 0.5857885 0.3817022 0.2134408
+## [1] 0.9039442 0.7155564 0.8504101 0.8659769
 ## 
 ## [[5]]
-## [1] 0.6312031 0.2933191 0.2273750 0.1661570 0.8166044</code></pre>
+## [1] 0.9418735 0.8241488 0.3828996 0.9860453 0.7412035</code></pre>
 <pre class="r"><code>#4. ¿Qué hace map(-2:2, rnorm, n = 5)? ¿Por qué? ¿Qué hace map_dbl(-2:2, rnorm, n = 5)? ¿Por qué?
 
 -2:2 %&gt;% 
   map(rnorm, n = 5) #5 listas de 5 elementos c/u, cada lista con media que varía de -2:2 </code></pre>
 <pre><code>## [[1]]
-## [1] -0.5638876 -3.1941803 -2.2749894 -1.3433670 -2.5988217
+## [1] -2.473059 -2.433261 -2.328198 -1.299045 -2.272480
 ## 
 ## [[2]]
-## [1] -0.5246219 -0.9696838  1.2317794 -1.8970711 -0.6921947
+## [1] -0.69869519 -2.04482166 -0.71701159 -1.03578936  0.05616393
 ## 
 ## [[3]]
-## [1] -0.3262406  1.8322356  0.1408796 -1.4199807 -1.0140824
+## [1] -1.4474760 -1.1575375 -0.7721854 -1.1515730 -0.2373504
 ## 
 ## [[4]]
-## [1] -1.12894547 -0.08318939 -0.73314935 -0.13989793  0.57066599
+## [1]  0.7485087  1.2592769  0.7240358  1.5643925 -1.8812489
 ## 
 ## [[5]]
-## [1] 0.8864252 1.7224220 4.0004000 1.7960437 4.0990824</code></pre>
+## [1] 0.2517537 2.4798007 0.5460902 2.9085546 1.2926236</code></pre>
 <pre class="r"><code># -2:2 %&gt;%
 #   map_dbl(rnorm, n = 5) #quiere generar vector,  pero cada elemento tendría 5 valores. Da error 
 
@@ -1979,6 +1979,357 @@ y %&gt;% none(is.character)</code></pre>
 <pre class="r"><code>#&gt; [1] TRUE</code></pre>
 </div>
 </div>
+</div>
+<div id="r-base-lapply-y-sapply" class="section level2">
+<h2>R Base: lapply() y sapply()</h2>
+<p>la familia de funciones apply en R base tiene mucha similitud con las funciones map: * <strong>lapply</strong> es básicamente idéntica a map(), excepto que map() es consistente con todas las otras funciones de purrr y puedes usar atajos para .f.<br />
+* <strong>sapply()</strong> es un envoltorio (wrapper) de lapply() que automáticamente simplifica el output. Esto es úti lpara el trabajo interactivo pero es problemático en una función, ya que nunca se sabe qué tipo de output se obtendrá. * ** vapply()** es una alternativa más segura a sapply() porque debes ingresar un argumento adicional que define el tipo de output. El único problema con vapply() es que requiere mucha escritura: vapply(df, is.numeric, logical(1)) es equivalente a map_lgl(df, is.numeric). Una ventaja de vapply() sobre las funciones map de purrr es que también puede generar matrices — las funciones map solo generan vectores.</p>
+<pre class="r"><code>#Ejemplo de sapply donde fc aplicada a x1 devuelve lista, (pues tiene elementos de distinta longitud). En cambio aplicada a x2 devuelve un vector porque la salida es un elemento de cada vector que tiene la lista.
+
+x1 &lt;- list(
+  c(0.27, 0.37, 0.57, 0.91, 0.20),
+  c(0.90, 0.94, 0.66, 0.63, 0.06), 
+  c(0.21, 0.18, 0.69, 0.38, 0.77)
+)
+x2 &lt;- list(
+  c(0.50, 0.72, 0.99, 0.38, 0.78), 
+  c(0.93, 0.21, 0.65, 0.13, 0.27), 
+  c(0.39, 0.01, 0.38, 0.87, 0.34)
+)
+
+umbral &lt;- function(x, cutoff = 0.8) x[x &gt; cutoff]
+x1 %&gt;% sapply(umbral) %&gt;% str()</code></pre>
+<pre><code>## List of 3
+##  $ : num 0.91
+##  $ : num [1:2] 0.9 0.94
+##  $ : num(0)</code></pre>
+<pre class="r"><code>x2 %&gt;% sapply(umbral) %&gt;% str()</code></pre>
+<pre><code>##  num [1:3] 0.99 0.93 0.87</code></pre>
+</div>
+<div id="manejando-los-errores" class="section level2">
+<h2>Manejando los errores</h2>
+<div id="safely" class="section level3">
+<h3>safely()</h3>
+<p>Cuando alguna de las iteraciones dentro de una función map tiene problemas, obtendrás un mensaje de error y no una salida. Como se puede evitar: con la función safely(), toma una función (un verbo) y entrega una versión modificada.En este caso, la función modificada nunca lanzará un error. En cambio, siempre devolverá una lista de dos elementos: 1. ´result´ es el resultado original. Si hubo un error, aparecerá como NULL<br />
+2. ´error´ es un objeto de error. Si la operación fue exitosa, será NULL.</p>
+<p>try() (intentar) de R base es similar, pero dado que a veces entrega el resultado original y a veces un objeto de error no es tan confiable.</p>
+</div>
+<div id="possibly" class="section level3">
+<h3>possibly()</h3>
+<p>possibly siempre tendrá éxito. Es más simple que safely(), ya que se le da un valor por defecto para devolver cuando haya un error.</p>
+</div>
+<div id="quietly" class="section level3">
+<h3>quietly()</h3>
+<p>quietly() tiene un rol similar a safely(), pero en lugar de capturar los errores, captura el output impreso, los mensajes y las advertencias.</p>
+<pre class="r"><code>log_seguro &lt;- safely(log)
+str(log_seguro(10))</code></pre>
+<pre><code>## List of 2
+##  $ result: num 2.3
+##  $ error : NULL</code></pre>
+<pre class="r"><code>str(log_seguro(&quot;a&quot;))</code></pre>
+<pre><code>## List of 2
+##  $ result: NULL
+##  $ error :List of 2
+##   ..$ message: chr &quot;non-numeric argument to mathematical function&quot;
+##   ..$ call   : language .Primitive(&quot;log&quot;)(x, base)
+##   ..- attr(*, &quot;class&quot;)= chr [1:3] &quot;simpleError&quot; &quot;error&quot; &quot;condition&quot;</code></pre>
+<pre class="r"><code>x &lt;- list(1, 10, &quot;a&quot;)
+y &lt;- x %&gt;% map(safely(log))
+str(y)</code></pre>
+<pre><code>## List of 3
+##  $ :List of 2
+##   ..$ result: num 0
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: num 2.3
+##   ..$ error : NULL
+##  $ :List of 2
+##   ..$ result: NULL
+##   ..$ error :List of 2
+##   .. ..$ message: chr &quot;non-numeric argument to mathematical function&quot;
+##   .. ..$ call   : language .Primitive(&quot;log&quot;)(x, base)
+##   .. ..- attr(*, &quot;class&quot;)= chr [1:3] &quot;simpleError&quot; &quot;error&quot; &quot;condition&quot;</code></pre>
+<pre class="r"><code># es mas facil de trabajar si fueran 2 listas diferentes, para eso se usa transpose:
+
+y &lt;- y %&gt;% transpose()
+str(y)</code></pre>
+<pre><code>## List of 2
+##  $ result:List of 3
+##   ..$ : num 0
+##   ..$ : num 2.3
+##   ..$ : NULL
+##  $ error :List of 3
+##   ..$ : NULL
+##   ..$ : NULL
+##   ..$ :List of 2
+##   .. ..$ message: chr &quot;non-numeric argument to mathematical function&quot;
+##   .. ..$ call   : language .Primitive(&quot;log&quot;)(x, base)
+##   .. ..- attr(*, &quot;class&quot;)= chr [1:3] &quot;simpleError&quot; &quot;error&quot; &quot;condition&quot;</code></pre>
+<pre class="r"><code># Hay dos maneras entonces de trabajarlo: 
+# mirar los valores de x donde y es un error, 
+
+estan_ok &lt;- y$error %&gt;% map_lgl(is_null)
+x[!estan_ok]</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;a&quot;</code></pre>
+<pre class="r"><code># o trabajar con los valores que y que están ok
+y$result[estan_ok] %&gt;% flatten_dbl()</code></pre>
+<pre><code>## [1] 0.000000 2.302585</code></pre>
+<pre class="r"><code># con possibly()
+
+x %&gt;% map_dbl(possibly(log, NA_real_))</code></pre>
+<pre><code>## [1] 0.000000 2.302585       NA</code></pre>
+<pre class="r"><code># con quietly()
+x &lt;- list(1, -1)
+x %&gt;% map(quietly(log)) %&gt;% str()</code></pre>
+<pre><code>## List of 2
+##  $ :List of 4
+##   ..$ result  : num 0
+##   ..$ output  : chr &quot;&quot;
+##   ..$ warnings: chr(0) 
+##   ..$ messages: chr(0) 
+##  $ :List of 4
+##   ..$ result  : num NaN
+##   ..$ output  : chr &quot;&quot;
+##   ..$ warnings: chr &quot;Se han producido NaNs&quot;
+##   ..$ messages: chr(0)</code></pre>
+</div>
+</div>
+<div id="iterar-map-sobre-más-de-un-input" class="section level2">
+<h2>Iterar (map) sobre más de un input:</h2>
+<p>Es el trabajo de las funciones <strong>map2()</strong> y <strong>pmap()</strong>. Se usan cuando se tienen multiples inputs relacionados y se necesita iterar sobre ellos en paralelo</p>
+<pre class="r"><code>mu &lt;- list(5, 10, -3)
+mu %&gt;% 
+  map(rnorm, n = 5) %&gt;% 
+  str()</code></pre>
+<pre><code>## List of 3
+##  $ : num [1:5] 5.76 5.42 4.5 4.09 5.94
+##  $ : num [1:5] 8.7 10.64 9.36 8.4 10.06
+##  $ : num [1:5] -2.29 -2.86 -2.65 -2.92 -3.02</code></pre>
+<pre class="r"><code>#Si se quiere también iterar sobre el desvío standard
+#una forma poco elegante de resolver 
+sigma &lt;- list(1, 5, 10)
+seq_along(mu) %&gt;% 
+  map(~rnorm(5, mu[[.x]], sigma[[.x]])) %&gt;% 
+  str()</code></pre>
+<pre><code>## List of 3
+##  $ : num [1:5] 5.26 6.39 6.24 4.96 3.59
+##  $ : num [1:5] 9.62 19.2 17.11 9.31 14.58
+##  $ : num [1:5] 5.33 -7.86 -10.01 -2.35 -1.46</code></pre>
+<pre class="r"><code># más elegante:
+map2(mu, sigma, rnorm, n = 5) %&gt;% str()</code></pre>
+<pre><code>## List of 3
+##  $ : num [1:5] 4.59 6.19 5.1 4.94 4.96
+##  $ : num [1:5] 12.6826 9.5666 13.3808 4.8989 -0.0708
+##  $ : num [1:5] 13.86 -14.81 -16.78 -9.87 -17.06</code></pre>
+<pre class="r"><code># IMPORTANTE: los argumentos que varían para cada llamada van antes de la función; argumentos que son los mismos para cada llamada van después.
+
+# para que todos los argumentos se manejen se usa pmap: 
+n &lt;- list(1, 3, 5)
+
+args1 &lt;- list(n, mu, sigma)
+args1 %&gt;%
+  pmap(rnorm) %&gt;% 
+  str()</code></pre>
+<pre><code>## List of 3
+##  $ : num 4.07
+##  $ : num [1:3] 10.04 12.25 9.11
+##  $ : num [1:5] 3.8 2.9 -19.36 -21.5 -6.98</code></pre>
+<pre class="r"><code># Si no nombras todos los elementos de la lista, pmap() usará una coincidencia posicional al llamar la función. Esto es un poco frágil y hace el código más difícil de leer, por lo que es mejor nombrar los argumentos:
+
+args2 &lt;- list(mean = mu, sd = sigma, n = n)
+args2 %&gt;% 
+  pmap(rnorm) %&gt;% 
+  str()</code></pre>
+<pre><code>## List of 3
+##  $ : num 4.76
+##  $ : num [1:3] 15.27 11.89 9.11
+##  $ : num [1:5] 2.19 -19.26 1.38 1.32 -4.96</code></pre>
+<pre class="r"><code># Dado que los argumentos son todos del mismo largo, tiene sentido almacenarlos en un dataframe:
+
+params &lt;- tribble(
+  ~mean, ~sd, ~n,
+    5,     1,  1,
+   10,     5,  3,
+   -3,    10,  5
+)
+params %&gt;% 
+  pmap(rnorm)</code></pre>
+<pre><code>## [[1]]
+## [1] 5.489844
+## 
+## [[2]]
+## [1] 12.860182 17.917924  4.601806
+## 
+## [[3]]
+## [1]  -8.512370 -19.185533   4.725987  -6.500829  -1.513712</code></pre>
+</div>
+<div id="invoke_map-invocando-distintas-funciones-para-mapear" class="section level2">
+<h2>invoke_map: Invocando distintas funciones para mapear</h2>
+<p>Un poco más complicado, se puede:<br />
+Así como cambias los argumentos de la función, <strong>cambiar la función misma</strong>:</p>
+<p>invoke_map(f, param, n = 5)</p>
+<p>El primer argumento es una lista de funciones o un vector de caracteres con nombres de funciones. El segundo argumento es una lista de listas que indica los argumentos que cambian en cada función. Los argumentos subsecuentes pasan a cada función.</p>
+<pre class="r"><code>f &lt;- c(&quot;runif&quot;, &quot;rnorm&quot;, &quot;rpois&quot;)
+param &lt;- list(
+  list(min = -1, max = 1), 
+  list(sd = 5), 
+  list(lambda = 10)
+)
+
+invoke_map(f, param, n = 5) %&gt;% str()</code></pre>
+<pre><code>## List of 3
+##  $ : num [1:5] 0.8376 0.4294 -0.0572 -0.1971 0.183
+##  $ : num [1:5] -3.35 -4.27 -8.33 -3.44 -6.58
+##  $ : int [1:5] 16 11 10 8 13</code></pre>
+<pre class="r"><code># O lo que es más elegante, como antes:
+
+sim &lt;- tribble(
+  ~f,      ~params,
+  &quot;runif&quot;, list(min = -1, max = 1),
+  &quot;rnorm&quot;, list(sd = 5),
+  &quot;rpois&quot;, list(lambda = 10)
+)
+
+sim %&gt;% 
+  mutate(sim = invoke_map(f, params, n = 10))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["f"],"name":[1],"type":["chr"],"align":["left"]},{"label":["params"],"name":[2],"type":["list"],"align":["right"]},{"label":["sim"],"name":[3],"type":["list"],"align":["right"]}],"data":[{"1":"runif","2":"<named list [2]>","3":"<dbl [10]>"},{"1":"rnorm","2":"<named list [1]>","3":"<dbl [10]>"},{"1":"rpois","2":"<named list [1]>","3":"<int [10]>"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="walk" class="section level2">
+<h2>walk()</h2>
+<p>Walk es una alternativa a map que puedes usar cuando quieras llamar a una función por sus efectos colaterales, más que por sobre el valor que devuelve. Típicamente se usa cuando queremos mostrar la salida en pantalla o guardar archivos en el disco. Lo importante es la acción, no el valor resultante.</p>
+<pre class="r"><code>x &lt;- list(1, &quot;a&quot;, 3)
+
+x %&gt;% 
+  walk(print)</code></pre>
+<pre><code>## [1] 1
+## [1] &quot;a&quot;
+## [1] 3</code></pre>
+<p>walk() no es tan útil si se compara con walk2() o pwalk(). Si tienes una lista de gráficos y un vector con nombres de archivos, puedes usar pwalk() para guardar cada archivo en su ubicación correspondiente en el disco.</p>
+<pre class="r"><code>library(ggplot2)
+plots &lt;- mtcars %&gt;% 
+  split(.$cyl) %&gt;% 
+  map(~ggplot(.x, aes(mpg, wt)) + geom_point())
+paths &lt;- stringr::str_c(names(plots), &quot;.pdf&quot;)
+
+pwalk(list(paths, plots), ggsave, path = tempdir())</code></pre>
+<pre><code>## Saving 7 x 5 in image
+## Saving 7 x 5 in image
+## Saving 7 x 5 in image</code></pre>
+<p>walk(), walk2() y pwalk() devuelven de forma invisible ., el primer argumento. Esto las hace adecuadas para usar dentro de cadenas de pipes.</p>
+</div>
+<div id="funciones-predictivas" class="section level2">
+<h2>Funciones Predictivas:</h2>
+<p>Algunas funciones trabajan con funciones predicativas que entregan un único valor TRUE o FALSE.</p>
+<p>keep() y discard() mantienen los elementos de la entrada donde el predicado es TRUE o FALSE, respectivamente. detect() encuentra el primer elemento donde el predicado es verdadero; detect_index() entrega su posición.</p>
+<p>head_while() y tail_while() toman elementos al inicio y final de un vector cuando el predicado es verdadero:</p>
+<pre class="r"><code>flores %&gt;% 
+  keep(is.factor) %&gt;% 
+  str()</code></pre>
+<pre><code>## &#39;data.frame&#39;:    150 obs. of  1 variable:
+##  $ Especies: Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<pre class="r"><code>flores %&gt;% 
+  discard(is.factor) %&gt;% 
+  str()</code></pre>
+<pre><code>## &#39;data.frame&#39;:    150 obs. of  4 variables:
+##  $ Largo.Sepalo: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Ancho.Sepalo: num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Largo.Petalo: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Ancho.Petalo: num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...</code></pre>
+<pre class="r"><code>x &lt;- sample(10)
+x</code></pre>
+<pre><code>##  [1] 10  8  2  7  6  1  5  9  3  4</code></pre>
+<pre class="r"><code>x %&gt;% 
+  detect(~ . &gt; 5)</code></pre>
+<pre><code>## [1] 10</code></pre>
+<pre class="r"><code>x %&gt;% 
+  detect_index(~ . &gt; 5)</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code># If you need to find all values, use keep():
+
+w &lt;- list(
+  list(1, foo = FALSE),
+  list(2, foo = TRUE),
+  list(3, foo = TRUE)
+)
+keep(w, &quot;foo&quot;)</code></pre>
+<pre><code>## [[1]]
+## [[1]][[1]]
+## [1] 2
+## 
+## [[1]]$foo
+## [1] TRUE
+## 
+## 
+## [[2]]
+## [[2]][[1]]
+## [1] 3
+## 
+## [[2]]$foo
+## [1] TRUE</code></pre>
+<pre class="r"><code># If you need to find all positions, use map_lgl():
+which(map_lgl(w, &quot;foo&quot;))</code></pre>
+<pre><code>## [1] 2 3</code></pre>
+<pre class="r"><code>x %&gt;% 
+  head_while(~ .x &gt; 5)</code></pre>
+<pre><code>## [1] 10  8</code></pre>
+<pre class="r"><code>x %&gt;% 
+  tail_while(~ .x &gt; 5)</code></pre>
+<pre><code>## integer(0)</code></pre>
+</div>
+<div id="reducir-y-acumular" class="section level2">
+<h2>Reducir y acumular</h2>
+<p>La función reduce() (reducir) toma una función “binaria” (e.g. una función con dos inputs primarios) y la aplica repetidamente a una lista hasta que quede un solo elemento.</p>
+<pre class="r"><code>dfs &lt;- list(
+  age = tibble(name = &quot;John&quot;, age = 30),
+  sex = tibble(name = c(&quot;John&quot;, &quot;Mary&quot;), sex = c(&quot;M&quot;, &quot;F&quot;)),
+  trt = tibble(name = &quot;Mary&quot;, treatment = &quot;A&quot;)
+)
+
+dfs %&gt;% reduce(full_join)</code></pre>
+<pre><code>## Joining, by = &quot;name&quot;
+## Joining, by = &quot;name&quot;</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["age"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["sex"],"name":[3],"type":["chr"],"align":["left"]},{"label":["treatment"],"name":[4],"type":["chr"],"align":["left"]}],"data":[{"1":"John","2":"30","3":"M","4":"NA"},{"1":"Mary","2":"NA","3":"F","4":"A"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>vs &lt;- list(
+  c(1, 3, 5, 6, 10),
+  c(1, 2, 3, 7, 8, 10),
+  c(1, 2, 3, 4, 8, 9, 10)
+)
+
+vs %&gt;% reduce(intersect)</code></pre>
+<pre><code>## [1]  1  3 10</code></pre>
+<p>accumulate() (acumular) es similar, pero mantiene todos los resultados intermedios. Podría usarse para implementar una suma acumulativa:</p>
+<pre class="r"><code>x &lt;- sample(10)
+x</code></pre>
+<pre><code>##  [1]  2  6 10  7  8  1  5  9  3  4</code></pre>
+<pre class="r"><code>x %&gt;% accumulate(`+`)</code></pre>
+<pre><code>##  [1]  2  8 18 25 33 34 39 48 51 55</code></pre>
+<p>##Ejercicios:</p>
+<pre class="r"><code>#1.Implementa tu propia versión de every() usando un bucle for. Compárala con purrr::every(). ¿Qué hace la versión de purrr que la tuya no?
+
+evry &lt;- function(x, p) {
+ for (i in .x) {
+  if(.p(i)) {
+    TRUE
+  } else {
+    FALSE
+    break
+    }
+  }
+} 
+
+eje1 &lt;- c(1, 4, 5, 3, 6, 7, 8, 9)
+condic1 &lt;- &quot;is.numeric&quot;
+
+#evry(eje1, condic1)</code></pre>
 </div>
 
 
