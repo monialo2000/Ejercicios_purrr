@@ -1,0 +1,288 @@
+---
+title: "Map y semejantes"
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(datos)
+```
+
+## Iteracion
+Empezamos por la iteración conocida, for:
+Tenemos secuencia, cuerpo y output
+La **salida** conviene definirla antes y no aumentando en cada iteracion, por eficiencia del proceso.
+La **secuencia** conviene utilizar seq_along(). Es una versión segura de la más familiar 1:length(l). Resuelve bien el caso que length sea 0.
+
+```{r for}
+df <- tibble(
+  a = rnorm(10),
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+
+output <- vector("double", ncol(df))  # 1. output   
+                                    #vector(mode = "logical", length = 0)
+
+
+for (i in seq_along(df)) {            # 2. secuencia
+  output[[i]] <- median(df[[i]])      # 3. cuerpo
+}
+
+# seq_along En vez de 1:length()
+y <- vector("double", 0)
+seq_along(y)
+1:length(y)
+```
+for  acompañado con una función es muy útil para no repetir:
+
+```{r for_funcion}
+rescale01 <- function(x) {
+  rng <- range(x, na.rm = TRUE)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+
+for (x in seq_along(df)) {
+ df[[x]] <- rescale01(df[[x]])
+}
+```
+
+Las formas de iteración de un for son 3:
+* for (i in seq_along (xs)) y extraer el valor con x[[i]]
+
+* for (x in xs) es la más útil si solo te preocupas por los efectos secundarios, como graficar o grabar un archivo
+
+```{r}
+vector <- c("a", "b", "c", "d")
+for (x in vector) {
+  print(x)
+}
+```
+
+
+
+* for (nm in names(xs)): iterando sobre los nombres. Esto te entrega el nombre, que se puede usar para acceder al valor con x [[nm]]. Esto es útil si queremos utilizar el nombre en el título de un gráfico o en el nombre de un archivo. Si estás creando un output con nombre, asegúrate de nombrar el vector de resultados de esta manera:
+
+```{r for con nombres}
+resultados <- vector("list", length(df))
+names(resultados) <- names(df)
+
+for (nm in names(df)) {
+  resultados[[nm]] <-  df[[nm]]
+}
+```
+
+Hacerlo con seq_along también te permite acceder al valor de cada elemento como al nombre.
+
+```{r seq_along}
+for (i in seq_along(x)) {
+  name <- names(x)[[i]]
+  value <- x[[i]]
+}
+```
+
+### Longitud de output desconocida
+
+** NO HACER!!!!**
+
+```{r FOR con crecimiento iterativo}
+medias <- c(0, 1, 2)
+
+output <- double()
+for (i in seq_along(medias)) {
+  n <- sample(100, 1)
+  output <- c(output, rnorm(n, medias[[i]]))
+}
+str(output)
+#>  num [1:138] 0.912 0.205 2.584 -0.789 0.588 ...
+```
+
+**Una mejor solución es guardar los resultados en una lista y luego combinarlos en un solo vector una vez que se complete el ciclo:**
+
+```{r For usando lista unlist purrr::flatten_dbl}
+out <- vector("list", length(medias))
+for (i in seq_along(medias)) {
+  n <- sample(100, 1)
+  out[[i]] <- rnorm(n, medias[[i]])
+}
+str(out)
+out_vector <- unlist(out)
+str(out_vector)
+out_vector <- purrr::flatten_dbl(out)
+str(out_vector)
+```
+
+
+### While
+```{r  while}
+lanzamiento <- function() sample(c("S", "C"), 1)
+
+lanzamientos <- 0
+ncaras <- 0
+
+while (ncaras < 3) {
+  if (lanzamiento() == "C") {
+    ncaras <- ncaras + 1
+  } else {
+    ncaras <- 0
+  }
+  lanzamientos <- lanzamientos + 1
+}
+lanzamientos
+```
+Los bucles for no son tan importantes en R como en otros lenguajes porque R es un lenguaje de programación funcional. Esto significa que es posible envolver los bucles en una función y llamar a esa función en lugar de usar el bucle for directamente.
+
+```{r calculo_mean_median_sd}
+
+
+col_resumen <- function(df, fun) {
+  out <- vector("double", length(df))
+  for (i in seq_along(df)) {
+    out[i] <- fun(df[[i]])
+  }
+  out
+}
+```
+La idea de pasar una función a otra es extremadamente poderosa y es uno de los comportamientos que hacen de R un lenguaje de programación funcional. La familia de funciones de R base apply (aplicar: apply (), lapply (), tapply (), etc.) resuelve un problema similar; sin embargo, purrr es más consistente y, por lo tanto, es más fácil de aprender.
+
+## PURRR y map()
+
+Cada función map (mapa, en español) toma un vector como input, aplica una función a cada elemento y luego devuelve un nuevo vector que tiene la misma longitud (y los mismos nombres) que el input. El tipo de vector está determinado por el sufijo de la función map.
+
+map () crea una lista.
+map_lgl () crea un vector lógico.
+map_int () crea un vector de enteros.
+map_dbl () crea un vector de dobles.
+map_chr () crea un vector de caracteres.
+
+El patrón de iterar sobre un vector, hacer algo con cada elemento y guardar los resultados es tan común que el paquete purrr proporciona una familia de funciones que lo hacen por ti. Nunca debes sentirse mal por usar un bucle for en lugar de una función map. Las funciones map son un nivel superior de abstracción y puede llevar mucho tiempo entender cómo funcionan. 
+Los principales beneficios de usar funciones como map () no es la velocidad, sino la claridad: hacen que tu código sea más fácil de escribir y leer.
+
+
+```{r map_dbl}
+map_dbl(df, mean) # media
+map_dbl(df, median) # mediana
+map_dbl(df, sd) # standard deviation
+
+df %>% map_dbl(mean)
+df %>% map_dbl(median)
+df %>% map_dbl(sd)
+```
+### map_ vs. col_resumen()
+
+Existen algunas diferencias entre map _ * () y col_resumen():  
+
+* Todas las funciones de purrr están implementadas en C. Esto las hace más rápidas a expensas de la legibilidad.  
+* El segundo argumento, .f, la función a aplicar, puede ser una función, una fórmula, un vector de caracteres o un vector de enteros.
+* map_*() usa … ([dot dot dot] - punto punto punto) para pasar los argumentos adicionales a .f cada vez que se llama:
+
+```{r map_ con dotdotdot}
+map_dbl(df, mean, trim = 0.5)
+#>           a           b           c           d 
+#> -0.51850298  0.02779864  0.17295591 -0.61163819
+```
+
+### Atajos:
+Existen algunos atajos que puedes usar con .f para ahorrar algo de tipeo Imagina que quieres ajustar un modelo lineal a cada grupo en un conjunto de datos. El siguiente ejemplo de juguete divide el dataset mtautos en tres partes (una para cada valor de cilindro) y ajusta el mismo modelo lineal a cada parte: 
+
+```{r split lm map_con_funcion_anonima map_atajo}
+modelos <- mtautos %>% 
+  split(.$cilindros) %>% 
+  map(function(df) lm(millas ~ peso, data = df))
+
+modelos <- mtautos %>% 
+  split(.$cilindros) %>% 
+  map(~lm(millas ~ peso, data = .x))
+```
+La sintaxis para crear una función anónima en R es bastante verbosa, por lo que purrr provee un atajo conveniente: una fórmula unilateral.  
+**Hemos usado . como pronombre: se refiere al elemento actual de la lista** (del mismo modo que i se refiere al índice actual en el loop for). .x corresponde al argumento de una función anónima. 
+#### Ejemplo
+Cuando examinas múltiples modelos, puedes querer extraer un estadístico resumen como lo es 
+R_cuadrado. Para hacer eso primero necesitas correr summary() y luego extraer la componente r.squared (R-cuadrado). Podríamos hacerlo usando un atajo para las funciones anónimas:
+```{r atajo string_variable num_variable}
+modelos %>% 
+  map(summary) %>% 
+  map_dbl(~.x$r.squared)
+
+#extraer componentes con nombres es una operación común, por lo que purrr provee un atajo aún más corto: puedes usar un
+
+modelos %>% 
+  map(summary) %>% 
+  map_dbl("r.squared")
+
+#También puedes usar un entero para seleccionar elementos de acuerdo a su posición:
+
+x <- list(list(1, 2, 3), list(4, 5, 6), list(7, 8, 9))
+x %>% map_dbl(2)
+```
+
+#### Ejercicios del libro:
+
+
+
+```{r}
+#1. Escribe un código que use una de las funciones de map para:
+# Calcular la media de cada columna en datos::mtautos.
+ mtautos %>%
+  summary( mean)
+
+# Obtener de qué tipo es cada columna en datos::vuelos
+vuelos %>% 
+  map_chr(typeof)
+
+#Calcular la cantidad de valores únicos en cada columna de datos::flores
+flores %>% 
+  map(~n_distinct(.x))
+ 
+#Generar diez normales aleatorias de distribuciones con medias -10, 0, 10 y 100.
+c(-10, 0, 10, 100) %>% 
+  map(~rnorm(n = 10, mean = .x))
+
+#2. Cómo puedes crear un vector tal que para cada columna en un data frame indique si corresponde o no a un factor?
+
+flores %>% 
+  map_lgl(is.factor)
+
+#3. Qué ocurre si usas las funciones map en vectores que no son listas? ¿Qué hace map(1:5, runif)? ¿Por qué? 
+#Respuesta: Toma cada elemento del vector como el n de la función runif. Un vector se puede considerar un tipo de lista donde cada elemento es del mismo tipo. Pero la salida va a ser una lista porque map siempre devuelve lista
+
+1:5 %>% 
+  map(runif)
+
+#4. ¿Qué hace map(-2:2, rnorm, n = 5)? ¿Por qué? ¿Qué hace map_dbl(-2:2, rnorm, n = 5)? ¿Por qué?
+
+-2:2 %>% 
+  map(rnorm, n = 5) #5 listas de 5 elementos c/u, cada lista con media que varía de -2:2 
+# -2:2 %>%
+#   map_dbl(rnorm, n = 5) #quiere generar vector,  pero cada elemento tendría 5 valores. Da error 
+
+#5. Reescribe map(x, function(df) lm(mpg ~ wt, data = df)) para eliminar todas las funciones anónimas.
+
+mtautos %>% 
+  split(.$cilindros) %>% 
+  map(~lm(millas ~ peso, data = .x))
+
+#en el formato solicitado sería:
+#map(x, ~lm(millas ~ peso, data = .))
+
+```
+ 
+```{r every some none}
+
+y <- list(0:10, 5.5)
+y %>% every(is.numeric)
+#> [1] TRUE
+y %>% every(is.integer)
+#> [1] FALSE
+y %>% some(is.integer)
+#> [1] TRUE
+y %>% none(is.character)
+#> [1] TRUE
+```
+
+
