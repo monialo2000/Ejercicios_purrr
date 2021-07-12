@@ -147,6 +147,10 @@ col_resumen <- function(df, fun) {
   }
   out
 }
+
+col_resumen(mtautos, mean)
+col_resumen(mtautos, median)
+col_resumen(mtautos, sd)
 ```
 La idea de pasar una función a otra es extremadamente poderosa y es uno de los comportamientos que hacen de R un lenguaje de programación funcional. La familia de funciones de R base apply (aplicar: apply (), lapply (), tapply (), etc.) resuelve un problema similar; sin embargo, purrr es más consistente y, por lo tanto, es más fácil de aprender.
 
@@ -185,6 +189,53 @@ Existen algunas diferencias entre map _ * () y col_resumen():
 map_dbl(df, mean, trim = 0.5)
 #>           a           b           c           d 
 #> -0.51850298  0.02779864  0.17295591 -0.61163819
+```
+
+Otras funciones map que existen:
+
+**map_dfr**: Si cada elemento del output es un dataframe, conviene usar
+ map_dfr para unir los dataframes x fila. 
+ En este ejemplo separa mtcars por var. cilindo, calcula una regresion lineal de cada parte y une los resultados
+ 
+```{r map_dfr}
+mtcars %>%
+  split(.$cyl) %>%
+  map(~ lm(mpg ~ wt, data = .x)) %>%
+  map_dfr(~ as.data.frame(t(as.matrix(coef(.)))))
+# (if you also want to preserve the variable names see
+# the broom package)
+
+```
+ 
+ 
+lmap(.x, .f, ...) Aplica una función a cada elemento de una lista o vector, la diferencia es que opera **sólo si las funciones toman como entrada una lista y retornan una lista**. En vez de mapear los elementos de una lista .x[[i]], aplican la función a cada subconjunto de la lista .x[i] lo que llamamos list-elements
+```{r lmap}
+#definimos la función disjoin que abre una variable que pueda convertirse en categoricas, en tantas variables como categorías tenga y con valores 0 y 1 en cada nueva variable
+#la funcion disjoin devuelve una lista o vector
+disjoin <- function(x, sep = "_") {
+  name <- names(x)
+  x <- as.factor(x[[1]])
+
+  out <- lapply(levels(x), function(level) {
+    as.numeric(x == level)
+  })
+
+  names(out) <- paste(name, levels(x), sep = sep)
+  out
+}
+
+iris %>% lmap_if(is.factor, disjoin)
+mtcars %>% lmap_at(c("cyl", "vs", "am"), disjoin)
+```
+
+imap(.x, .f, ...) Aplica .f a cada elemento de una lista o vector y su índice.
+
+```{r imap}
+# Note that when using the formula shortcut, the first argument
+# is the value, and the second is the position
+nuevo <- sample(10)
+imap_chr(nuevo, ~ paste0(.y, ": ", .x)) #el 1ro. es indice el 2do es valor
+iwalk(mtcars, ~ cat(.y, ": ", median(.x), "\n", sep = "")) #imprime el nombre y después el valor
 ```
 
 ### Atajos:
@@ -445,6 +496,8 @@ sim %>%
 ```
 ## walk()
 Walk es una alternativa a map que puedes usar cuando quieras llamar a una función por sus efectos colaterales, más que por sobre el valor que devuelve. Típicamente se usa cuando queremos mostrar la salida en pantalla o guardar archivos en el disco. Lo importante es la acción, no el valor resultante. 
+walk(.x, .f, ...) llama a la función .f por su side-effect y devuelve .x.
+
 ```{r walk}
 x <- list(1, "a", 3)
 
@@ -552,21 +605,167 @@ x %>% accumulate(`+`)
 
 #1.Implementa tu propia versión de every() usando un bucle for. Compárala con purrr::every(). ¿Qué hace la versión de purrr que la tuya no?
 
-evry <- function(x, p) {
- for (i in .x) {
-  if(.p(i)) {
-    TRUE
-  } else {
-    FALSE
-    break
-    }
+every2 <- function(x, p, ...) {
+  for (i in x) {
+      if(p(i,...)) {
+        a <- TRUE
+      } else {
+        a <- FALSE
+        break
+      }
   }
-} 
+  a
+  } 
 
-eje1 <- c(1, 4, 5, 3, 6, 7, 8, 9)
-condic1 <- "is.numeric"
 
-#evry(eje1, condic1)
+s <- every2(letters, function(y) {
+  is.numeric(y)
+})
+
 
 ```
+
+## Otras funciones de PURRR:
+
+**pluck()** extrae un element de una lista, 
+* por name 
+* por posición 
+* por atributo con attr_getter
+* También acepta funciones "accesor" (estos accesor nunca con acceso parcial)  
+
+Devuelve todo el contenido del elemento como está, sin envolverlo en una nueva lista.
+
+Por default, pluck retorna "NULL" si un elemento no existe, pero se le puede decir que de devuelva otro valor con .default = NA.
+Para que de error, usar chuck() en vez de pluck()
+pluck(.x, ..., .default=NULL): Selecciona un elemento 
+* por nombre o índice, pluck(x,"b") 
+* ,o su atributo con
+attr_getter.
+
+```{r pluck}
+obj1 <- list("a", list(1, elt = "foo"))
+obj2 <- list("b", list(2, elt = "bar"))
+x <- list(obj1, obj2)
+
+rec <- pluck(x, 1)   # devuelve 1er lista
+# idem a x[[1]]
+
+pluck(x, 1, 2)      # devuelve 2 elemento de 1 lista
+#idem x[[1]][[2]]
+
+pluck(x, 10)
+pluck(x, 10, .default = NA)
+#chuck(x, 10)  # si se quiere obtener error en vez de null cdo no se encuentra
+#try(chuck(x, 10))
+
+#accessor:
+# pluck() also supports accessor functions:
+my_element <- function(x) x[[2]]$elt
+
+# The accessor can then be passed to pluck:
+pluck(x, 1, my_element)
+pluck(x, 2, my_element)
+
+# If you have a list of accessors, you can splice those in with `!!!`:
+idx <- list(1, my_element)
+pluck(x, !!!idx)
+
+#attr_getter
+get_rownames <- attr_getter("row.names")
+get_rownames(mtcars)
+
+obj1 <- structure("obj", obj_attr = "foo")
+obj2 <- structure("obj", obj_attr = "bar")
+x1 <- list(obj1, obj2)
+
+pluck(x1, 1, attr_getter("obj_attr"))  # From first object
+pluck(x1, 2, attr_getter("obj_attr"))  # From second object
+
+```
+
+
+**compact()** es un wrapper util para remover los elementos vacios. 
+
+```{r keep discacr compact}
+# Using a string instead of a function will select all list elements
+# where that subelement is TRUE
+x_nue <- rerun(5, a = rbernoulli(1), b = sample(10))
+print("x_nue")
+x_nue
+print("keep a")
+x_nue %>% keep("a")
+
+print("discard a")
+x_nue %>% discard("a")
+
+# compact() discards elements that are NULL or that have length zero
+print("compact")
+list(a = "a", b = NULL, c = integer(0), d = NA, e = list()) %>%
+  compact()
+```
+
+
+
+flatten(.x) Elimina un nivel
+de índices de una lista.
+También flatten_chr,
+flatten_dbl, flatten_dfc,
+flatten_dfr, flatten_int,
+flatten_lgl. flatten(x)
+
+has_element(.x, .y) ¿Contiene
+la lista un elemento?
+has_element(x, "foo")
+
+depth(x) Devuelve profundidad
+(número de niveles o índices).
+depth(x)
+
+## Unir Listas
+append(x, values, after =
+length(x)) Añade al final de una
+length(x)) Añade al final de una
+lista. append(x, list(d = 1))
+prepend(x, values, before = 1)
+Añade al principio de una lista.
+prepend(x, list(d = 1))
+splice(…) Combina objetos en
+una lista, almacena objetos S3
+como sub-listas. splice(x, y, "foo")
+
+## Transformar listas
+modify(.x, .f, ...) Aplica una
+función a cada elemento. También
+map, map_chr, map_dbl,
+map_dfc, map_dfr, map_int,
+map_lgl. modify(x, ~.+ 2)
+modify_at(.x, .at, .f, ...) Aplica una
+función a los elementos por
+nombre o índice. También
+map_at. modify_at(x, "b", ~.+ 2)
+modify_if(.x, .p, .f, ...) Aplica una
+función a los elementos que
+pasan una prueba. También
+map_if.
+modify_if(x, is.numeric,~.+2)
+modify_depth(.x,.depth,.f,...)
+Aplica una función a cada
+elemento y un nivel dado de una
+lista. modify_depth(x, 1, ~.+ 2)
+
+## TRABAJAR CON LISTAS
+array_tree(array, margin =
+NULL) Convierte una matriz en
+una lista. También
+array_branch. array_tree(x,
+margin = 3)
+cross2(.x, .y, .filter = NULL)
+Todas las combinaciones de .x
+e .y. También cross, cross3,
+cross_df. cross2(1:3, 4:6)
+set_names(x, nm = x) Fija el
+nombre de un vector/lista
+directamente o con una función.
+set_names(x, c("p", "q", "r"))
+set_names(x, tolower)
 

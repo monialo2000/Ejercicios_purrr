@@ -1693,7 +1693,7 @@ for (i in seq_along(medias)) {
   output &lt;- c(output, rnorm(n, medias[[i]]))
 }
 str(output)</code></pre>
-<pre><code>##  num [1:156] 0.2148 1.5435 -1.7301 -0.0964 0.4211 ...</code></pre>
+<pre><code>##  num [1:81] 0.0264 -0.6025 1.8208 1.205 -0.0614 ...</code></pre>
 <pre class="r"><code>#&gt;  num [1:138] 0.912 0.205 2.584 -0.789 0.588 ...</code></pre>
 <p><strong>Una mejor solución es guardar los resultados en una lista y luego combinarlos en un solo vector una vez que se complete el ciclo:</strong></p>
 <pre class="r"><code>out &lt;- vector(&quot;list&quot;, length(medias))
@@ -1703,15 +1703,15 @@ for (i in seq_along(medias)) {
 }
 str(out)</code></pre>
 <pre><code>## List of 3
-##  $ : num [1:76] -0.546 0.773 0.181 -0.465 0.955 ...
-##  $ : num [1:81] 1.019 2.208 1.418 2.797 0.281 ...
-##  $ : num [1:41] 1.85 1.535 0.813 0.803 0.423 ...</code></pre>
+##  $ : num [1:90] 0.362 -0.857 -0.252 -0.187 -0.779 ...
+##  $ : num [1:42] -1.36 0.337 1.23 0.906 2.53 ...
+##  $ : num [1:54] 2.12 2.33 3.46 1.2 2.95 ...</code></pre>
 <pre class="r"><code>out_vector &lt;- unlist(out)
 str(out_vector)</code></pre>
-<pre><code>##  num [1:198] -0.546 0.773 0.181 -0.465 0.955 ...</code></pre>
+<pre><code>##  num [1:186] 0.362 -0.857 -0.252 -0.187 -0.779 ...</code></pre>
 <pre class="r"><code>out_vector &lt;- purrr::flatten_dbl(out)
 str(out_vector)</code></pre>
-<pre><code>##  num [1:198] -0.546 0.773 0.181 -0.465 0.955 ...</code></pre>
+<pre><code>##  num [1:186] 0.362 -0.857 -0.252 -0.187 -0.779 ...</code></pre>
 </div>
 <div id="while" class="section level3">
 <h3>While</h3>
@@ -1729,7 +1729,7 @@ while (ncaras &lt; 3) {
   lanzamientos &lt;- lanzamientos + 1
 }
 lanzamientos</code></pre>
-<pre><code>## [1] 10</code></pre>
+<pre><code>## [1] 5</code></pre>
 <p>Los bucles for no son tan importantes en R como en otros lenguajes porque R es un lenguaje de programación funcional. Esto significa que es posible envolver los bucles en una función y llamar a esa función en lugar de usar el bucle for directamente.</p>
 <pre class="r"><code>col_resumen &lt;- function(df, fun) {
   out &lt;- vector(&quot;double&quot;, length(df))
@@ -1737,7 +1737,17 @@ lanzamientos</code></pre>
     out[i] &lt;- fun(df[[i]])
   }
   out
-}</code></pre>
+}
+
+col_resumen(mtautos, mean)</code></pre>
+<pre><code>##  [1]  20.090625   6.187500 230.721875 146.687500   3.596563   3.217250
+##  [7]  17.848750   0.437500   0.406250   3.687500   2.812500</code></pre>
+<pre class="r"><code>col_resumen(mtautos, median)</code></pre>
+<pre><code>##  [1]  19.200   6.000 196.300 123.000   3.695   3.325  17.710   0.000   0.000
+## [10]   4.000   2.000</code></pre>
+<pre class="r"><code>col_resumen(mtautos, sd)</code></pre>
+<pre><code>##  [1]   6.0269481   1.7859216 123.9386938  68.5628685   0.5346787   0.9784574
+##  [7]   1.7869432   0.5040161   0.4989909   0.7378041   1.6152000</code></pre>
 <p>La idea de pasar una función a otra es extremadamente poderosa y es uno de los comportamientos que hacen de R un lenguaje de programación funcional. La familia de funciones de R base apply (aplicar: apply (), lapply (), tapply (), etc.) resuelve un problema similar; sin embargo, purrr es más consistente y, por lo tanto, es más fácil de aprender.</p>
 </div>
 </div>
@@ -1748,22 +1758,22 @@ lanzamientos</code></pre>
 <p>El patrón de iterar sobre un vector, hacer algo con cada elemento y guardar los resultados es tan común que el paquete purrr proporciona una familia de funciones que lo hacen por ti. Nunca debes sentirse mal por usar un bucle for en lugar de una función map. Las funciones map son un nivel superior de abstracción y puede llevar mucho tiempo entender cómo funcionan. Los principales beneficios de usar funciones como map () no es la velocidad, sino la claridad: hacen que tu código sea más fácil de escribir y leer.</p>
 <pre class="r"><code>map_dbl(df, mean) # media</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.2919027 0.4831034 0.3957916 0.6294978</code></pre>
+## 0.3408533 0.5717009 0.5239053 0.5155702</code></pre>
 <pre class="r"><code>map_dbl(df, median) # mediana</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.2217211 0.4452235 0.3464426 0.6908610</code></pre>
+## 0.2480994 0.5440493 0.5409424 0.5142808</code></pre>
 <pre class="r"><code>map_dbl(df, sd) # standard deviation</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.3041091 0.2928925 0.3184042 0.2783187</code></pre>
+## 0.3272576 0.3215052 0.2970244 0.3453767</code></pre>
 <pre class="r"><code>df %&gt;% map_dbl(mean)</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.2919027 0.4831034 0.3957916 0.6294978</code></pre>
+## 0.3408533 0.5717009 0.5239053 0.5155702</code></pre>
 <pre class="r"><code>df %&gt;% map_dbl(median)</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.2217211 0.4452235 0.3464426 0.6908610</code></pre>
+## 0.2480994 0.5440493 0.5409424 0.5142808</code></pre>
 <pre class="r"><code>df %&gt;% map_dbl(sd)</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.3041091 0.2928925 0.3184042 0.2783187</code></pre>
+## 0.3272576 0.3215052 0.2970244 0.3453767</code></pre>
 <div id="map_-vs.-col_resumen" class="section level3">
 <h3>map_ vs. col_resumen()</h3>
 <p>Existen algunas diferencias entre map _ * () y col_resumen():</p>
@@ -1775,9 +1785,68 @@ lanzamientos</code></pre>
 </ul>
 <pre class="r"><code>map_dbl(df, mean, trim = 0.5)</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.2217211 0.4452235 0.3464426 0.6908610</code></pre>
+## 0.2480994 0.5440493 0.5409424 0.5142808</code></pre>
 <pre class="r"><code>#&gt;           a           b           c           d 
 #&gt; -0.51850298  0.02779864  0.17295591 -0.61163819</code></pre>
+<p>Otras funciones map que existen:</p>
+<p><strong>map_dfr</strong>: Si cada elemento del output es un dataframe, conviene usar map_dfr para unir los dataframes x fila. En este ejemplo separa mtcars por var. cilindo, calcula una regresion lineal de cada parte y une los resultados</p>
+<pre class="r"><code>mtcars %&gt;%
+  split(.$cyl) %&gt;%
+  map(~ lm(mpg ~ wt, data = .x)) %&gt;%
+  map_dfr(~ as.data.frame(t(as.matrix(coef(.)))))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["(Intercept)"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["wt"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"39.57120","2":"-5.647025"},{"1":"28.40884","2":"-2.780106"},{"1":"23.86803","2":"-2.192438"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code># (if you also want to preserve the variable names see
+# the broom package)</code></pre>
+<p>lmap(.x, .f, …) Aplica una función a cada elemento de una lista o vector, la diferencia es que opera <strong>sólo si las funciones toman como entrada una lista y retornan una lista</strong>. En vez de mapear los elementos de una lista .x[[i]], aplican la función a cada subconjunto de la lista .x[i] lo que llamamos list-elements</p>
+<pre class="r"><code>#definimos la función disjoin que abre una variable que pueda convertirse en categoricas, en tantas variables como categorías tenga y con valores 0 y 1 en cada nueva variable
+#la funcion disjoin devuelve una lista o vector
+disjoin &lt;- function(x, sep = &quot;_&quot;) {
+  name &lt;- names(x)
+  x &lt;- as.factor(x[[1]])
+
+  out &lt;- lapply(levels(x), function(level) {
+    as.numeric(x == level)
+  })
+
+  names(out) &lt;- paste(name, levels(x), sep = sep)
+  out
+}
+
+iris %&gt;% lmap_if(is.factor, disjoin)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Sepal.Length"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Sepal.Width"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Petal.Length"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Petal.Width"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Species_setosa"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Species_versicolor"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Species_virginica"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"5.1","2":"3.5","3":"1.4","4":"0.2","5":"1","6":"0","7":"0"},{"1":"4.9","2":"3.0","3":"1.4","4":"0.2","5":"1","6":"0","7":"0"},{"1":"4.7","2":"3.2","3":"1.3","4":"0.2","5":"1","6":"0","7":"0"},{"1":"4.6","2":"3.1","3":"1.5","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.0","2":"3.6","3":"1.4","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.4","2":"3.9","3":"1.7","4":"0.4","5":"1","6":"0","7":"0"},{"1":"4.6","2":"3.4","3":"1.4","4":"0.3","5":"1","6":"0","7":"0"},{"1":"5.0","2":"3.4","3":"1.5","4":"0.2","5":"1","6":"0","7":"0"},{"1":"4.4","2":"2.9","3":"1.4","4":"0.2","5":"1","6":"0","7":"0"},{"1":"4.9","2":"3.1","3":"1.5","4":"0.1","5":"1","6":"0","7":"0"},{"1":"5.4","2":"3.7","3":"1.5","4":"0.2","5":"1","6":"0","7":"0"},{"1":"4.8","2":"3.4","3":"1.6","4":"0.2","5":"1","6":"0","7":"0"},{"1":"4.8","2":"3.0","3":"1.4","4":"0.1","5":"1","6":"0","7":"0"},{"1":"4.3","2":"3.0","3":"1.1","4":"0.1","5":"1","6":"0","7":"0"},{"1":"5.8","2":"4.0","3":"1.2","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.7","2":"4.4","3":"1.5","4":"0.4","5":"1","6":"0","7":"0"},{"1":"5.4","2":"3.9","3":"1.3","4":"0.4","5":"1","6":"0","7":"0"},{"1":"5.1","2":"3.5","3":"1.4","4":"0.3","5":"1","6":"0","7":"0"},{"1":"5.7","2":"3.8","3":"1.7","4":"0.3","5":"1","6":"0","7":"0"},{"1":"5.1","2":"3.8","3":"1.5","4":"0.3","5":"1","6":"0","7":"0"},{"1":"5.4","2":"3.4","3":"1.7","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.1","2":"3.7","3":"1.5","4":"0.4","5":"1","6":"0","7":"0"},{"1":"4.6","2":"3.6","3":"1.0","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.1","2":"3.3","3":"1.7","4":"0.5","5":"1","6":"0","7":"0"},{"1":"4.8","2":"3.4","3":"1.9","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.0","2":"3.0","3":"1.6","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.0","2":"3.4","3":"1.6","4":"0.4","5":"1","6":"0","7":"0"},{"1":"5.2","2":"3.5","3":"1.5","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.2","2":"3.4","3":"1.4","4":"0.2","5":"1","6":"0","7":"0"},{"1":"4.7","2":"3.2","3":"1.6","4":"0.2","5":"1","6":"0","7":"0"},{"1":"4.8","2":"3.1","3":"1.6","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.4","2":"3.4","3":"1.5","4":"0.4","5":"1","6":"0","7":"0"},{"1":"5.2","2":"4.1","3":"1.5","4":"0.1","5":"1","6":"0","7":"0"},{"1":"5.5","2":"4.2","3":"1.4","4":"0.2","5":"1","6":"0","7":"0"},{"1":"4.9","2":"3.1","3":"1.5","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.0","2":"3.2","3":"1.2","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.5","2":"3.5","3":"1.3","4":"0.2","5":"1","6":"0","7":"0"},{"1":"4.9","2":"3.6","3":"1.4","4":"0.1","5":"1","6":"0","7":"0"},{"1":"4.4","2":"3.0","3":"1.3","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.1","2":"3.4","3":"1.5","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.0","2":"3.5","3":"1.3","4":"0.3","5":"1","6":"0","7":"0"},{"1":"4.5","2":"2.3","3":"1.3","4":"0.3","5":"1","6":"0","7":"0"},{"1":"4.4","2":"3.2","3":"1.3","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.0","2":"3.5","3":"1.6","4":"0.6","5":"1","6":"0","7":"0"},{"1":"5.1","2":"3.8","3":"1.9","4":"0.4","5":"1","6":"0","7":"0"},{"1":"4.8","2":"3.0","3":"1.4","4":"0.3","5":"1","6":"0","7":"0"},{"1":"5.1","2":"3.8","3":"1.6","4":"0.2","5":"1","6":"0","7":"0"},{"1":"4.6","2":"3.2","3":"1.4","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.3","2":"3.7","3":"1.5","4":"0.2","5":"1","6":"0","7":"0"},{"1":"5.0","2":"3.3","3":"1.4","4":"0.2","5":"1","6":"0","7":"0"},{"1":"7.0","2":"3.2","3":"4.7","4":"1.4","5":"0","6":"1","7":"0"},{"1":"6.4","2":"3.2","3":"4.5","4":"1.5","5":"0","6":"1","7":"0"},{"1":"6.9","2":"3.1","3":"4.9","4":"1.5","5":"0","6":"1","7":"0"},{"1":"5.5","2":"2.3","3":"4.0","4":"1.3","5":"0","6":"1","7":"0"},{"1":"6.5","2":"2.8","3":"4.6","4":"1.5","5":"0","6":"1","7":"0"},{"1":"5.7","2":"2.8","3":"4.5","4":"1.3","5":"0","6":"1","7":"0"},{"1":"6.3","2":"3.3","3":"4.7","4":"1.6","5":"0","6":"1","7":"0"},{"1":"4.9","2":"2.4","3":"3.3","4":"1.0","5":"0","6":"1","7":"0"},{"1":"6.6","2":"2.9","3":"4.6","4":"1.3","5":"0","6":"1","7":"0"},{"1":"5.2","2":"2.7","3":"3.9","4":"1.4","5":"0","6":"1","7":"0"},{"1":"5.0","2":"2.0","3":"3.5","4":"1.0","5":"0","6":"1","7":"0"},{"1":"5.9","2":"3.0","3":"4.2","4":"1.5","5":"0","6":"1","7":"0"},{"1":"6.0","2":"2.2","3":"4.0","4":"1.0","5":"0","6":"1","7":"0"},{"1":"6.1","2":"2.9","3":"4.7","4":"1.4","5":"0","6":"1","7":"0"},{"1":"5.6","2":"2.9","3":"3.6","4":"1.3","5":"0","6":"1","7":"0"},{"1":"6.7","2":"3.1","3":"4.4","4":"1.4","5":"0","6":"1","7":"0"},{"1":"5.6","2":"3.0","3":"4.5","4":"1.5","5":"0","6":"1","7":"0"},{"1":"5.8","2":"2.7","3":"4.1","4":"1.0","5":"0","6":"1","7":"0"},{"1":"6.2","2":"2.2","3":"4.5","4":"1.5","5":"0","6":"1","7":"0"},{"1":"5.6","2":"2.5","3":"3.9","4":"1.1","5":"0","6":"1","7":"0"},{"1":"5.9","2":"3.2","3":"4.8","4":"1.8","5":"0","6":"1","7":"0"},{"1":"6.1","2":"2.8","3":"4.0","4":"1.3","5":"0","6":"1","7":"0"},{"1":"6.3","2":"2.5","3":"4.9","4":"1.5","5":"0","6":"1","7":"0"},{"1":"6.1","2":"2.8","3":"4.7","4":"1.2","5":"0","6":"1","7":"0"},{"1":"6.4","2":"2.9","3":"4.3","4":"1.3","5":"0","6":"1","7":"0"},{"1":"6.6","2":"3.0","3":"4.4","4":"1.4","5":"0","6":"1","7":"0"},{"1":"6.8","2":"2.8","3":"4.8","4":"1.4","5":"0","6":"1","7":"0"},{"1":"6.7","2":"3.0","3":"5.0","4":"1.7","5":"0","6":"1","7":"0"},{"1":"6.0","2":"2.9","3":"4.5","4":"1.5","5":"0","6":"1","7":"0"},{"1":"5.7","2":"2.6","3":"3.5","4":"1.0","5":"0","6":"1","7":"0"},{"1":"5.5","2":"2.4","3":"3.8","4":"1.1","5":"0","6":"1","7":"0"},{"1":"5.5","2":"2.4","3":"3.7","4":"1.0","5":"0","6":"1","7":"0"},{"1":"5.8","2":"2.7","3":"3.9","4":"1.2","5":"0","6":"1","7":"0"},{"1":"6.0","2":"2.7","3":"5.1","4":"1.6","5":"0","6":"1","7":"0"},{"1":"5.4","2":"3.0","3":"4.5","4":"1.5","5":"0","6":"1","7":"0"},{"1":"6.0","2":"3.4","3":"4.5","4":"1.6","5":"0","6":"1","7":"0"},{"1":"6.7","2":"3.1","3":"4.7","4":"1.5","5":"0","6":"1","7":"0"},{"1":"6.3","2":"2.3","3":"4.4","4":"1.3","5":"0","6":"1","7":"0"},{"1":"5.6","2":"3.0","3":"4.1","4":"1.3","5":"0","6":"1","7":"0"},{"1":"5.5","2":"2.5","3":"4.0","4":"1.3","5":"0","6":"1","7":"0"},{"1":"5.5","2":"2.6","3":"4.4","4":"1.2","5":"0","6":"1","7":"0"},{"1":"6.1","2":"3.0","3":"4.6","4":"1.4","5":"0","6":"1","7":"0"},{"1":"5.8","2":"2.6","3":"4.0","4":"1.2","5":"0","6":"1","7":"0"},{"1":"5.0","2":"2.3","3":"3.3","4":"1.0","5":"0","6":"1","7":"0"},{"1":"5.6","2":"2.7","3":"4.2","4":"1.3","5":"0","6":"1","7":"0"},{"1":"5.7","2":"3.0","3":"4.2","4":"1.2","5":"0","6":"1","7":"0"},{"1":"5.7","2":"2.9","3":"4.2","4":"1.3","5":"0","6":"1","7":"0"},{"1":"6.2","2":"2.9","3":"4.3","4":"1.3","5":"0","6":"1","7":"0"},{"1":"5.1","2":"2.5","3":"3.0","4":"1.1","5":"0","6":"1","7":"0"},{"1":"5.7","2":"2.8","3":"4.1","4":"1.3","5":"0","6":"1","7":"0"},{"1":"6.3","2":"3.3","3":"6.0","4":"2.5","5":"0","6":"0","7":"1"},{"1":"5.8","2":"2.7","3":"5.1","4":"1.9","5":"0","6":"0","7":"1"},{"1":"7.1","2":"3.0","3":"5.9","4":"2.1","5":"0","6":"0","7":"1"},{"1":"6.3","2":"2.9","3":"5.6","4":"1.8","5":"0","6":"0","7":"1"},{"1":"6.5","2":"3.0","3":"5.8","4":"2.2","5":"0","6":"0","7":"1"},{"1":"7.6","2":"3.0","3":"6.6","4":"2.1","5":"0","6":"0","7":"1"},{"1":"4.9","2":"2.5","3":"4.5","4":"1.7","5":"0","6":"0","7":"1"},{"1":"7.3","2":"2.9","3":"6.3","4":"1.8","5":"0","6":"0","7":"1"},{"1":"6.7","2":"2.5","3":"5.8","4":"1.8","5":"0","6":"0","7":"1"},{"1":"7.2","2":"3.6","3":"6.1","4":"2.5","5":"0","6":"0","7":"1"},{"1":"6.5","2":"3.2","3":"5.1","4":"2.0","5":"0","6":"0","7":"1"},{"1":"6.4","2":"2.7","3":"5.3","4":"1.9","5":"0","6":"0","7":"1"},{"1":"6.8","2":"3.0","3":"5.5","4":"2.1","5":"0","6":"0","7":"1"},{"1":"5.7","2":"2.5","3":"5.0","4":"2.0","5":"0","6":"0","7":"1"},{"1":"5.8","2":"2.8","3":"5.1","4":"2.4","5":"0","6":"0","7":"1"},{"1":"6.4","2":"3.2","3":"5.3","4":"2.3","5":"0","6":"0","7":"1"},{"1":"6.5","2":"3.0","3":"5.5","4":"1.8","5":"0","6":"0","7":"1"},{"1":"7.7","2":"3.8","3":"6.7","4":"2.2","5":"0","6":"0","7":"1"},{"1":"7.7","2":"2.6","3":"6.9","4":"2.3","5":"0","6":"0","7":"1"},{"1":"6.0","2":"2.2","3":"5.0","4":"1.5","5":"0","6":"0","7":"1"},{"1":"6.9","2":"3.2","3":"5.7","4":"2.3","5":"0","6":"0","7":"1"},{"1":"5.6","2":"2.8","3":"4.9","4":"2.0","5":"0","6":"0","7":"1"},{"1":"7.7","2":"2.8","3":"6.7","4":"2.0","5":"0","6":"0","7":"1"},{"1":"6.3","2":"2.7","3":"4.9","4":"1.8","5":"0","6":"0","7":"1"},{"1":"6.7","2":"3.3","3":"5.7","4":"2.1","5":"0","6":"0","7":"1"},{"1":"7.2","2":"3.2","3":"6.0","4":"1.8","5":"0","6":"0","7":"1"},{"1":"6.2","2":"2.8","3":"4.8","4":"1.8","5":"0","6":"0","7":"1"},{"1":"6.1","2":"3.0","3":"4.9","4":"1.8","5":"0","6":"0","7":"1"},{"1":"6.4","2":"2.8","3":"5.6","4":"2.1","5":"0","6":"0","7":"1"},{"1":"7.2","2":"3.0","3":"5.8","4":"1.6","5":"0","6":"0","7":"1"},{"1":"7.4","2":"2.8","3":"6.1","4":"1.9","5":"0","6":"0","7":"1"},{"1":"7.9","2":"3.8","3":"6.4","4":"2.0","5":"0","6":"0","7":"1"},{"1":"6.4","2":"2.8","3":"5.6","4":"2.2","5":"0","6":"0","7":"1"},{"1":"6.3","2":"2.8","3":"5.1","4":"1.5","5":"0","6":"0","7":"1"},{"1":"6.1","2":"2.6","3":"5.6","4":"1.4","5":"0","6":"0","7":"1"},{"1":"7.7","2":"3.0","3":"6.1","4":"2.3","5":"0","6":"0","7":"1"},{"1":"6.3","2":"3.4","3":"5.6","4":"2.4","5":"0","6":"0","7":"1"},{"1":"6.4","2":"3.1","3":"5.5","4":"1.8","5":"0","6":"0","7":"1"},{"1":"6.0","2":"3.0","3":"4.8","4":"1.8","5":"0","6":"0","7":"1"},{"1":"6.9","2":"3.1","3":"5.4","4":"2.1","5":"0","6":"0","7":"1"},{"1":"6.7","2":"3.1","3":"5.6","4":"2.4","5":"0","6":"0","7":"1"},{"1":"6.9","2":"3.1","3":"5.1","4":"2.3","5":"0","6":"0","7":"1"},{"1":"5.8","2":"2.7","3":"5.1","4":"1.9","5":"0","6":"0","7":"1"},{"1":"6.8","2":"3.2","3":"5.9","4":"2.3","5":"0","6":"0","7":"1"},{"1":"6.7","2":"3.3","3":"5.7","4":"2.5","5":"0","6":"0","7":"1"},{"1":"6.7","2":"3.0","3":"5.2","4":"2.3","5":"0","6":"0","7":"1"},{"1":"6.3","2":"2.5","3":"5.0","4":"1.9","5":"0","6":"0","7":"1"},{"1":"6.5","2":"3.0","3":"5.2","4":"2.0","5":"0","6":"0","7":"1"},{"1":"6.2","2":"3.4","3":"5.4","4":"2.3","5":"0","6":"0","7":"1"},{"1":"5.9","2":"3.0","3":"5.1","4":"1.8","5":"0","6":"0","7":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>mtcars %&gt;% lmap_at(c(&quot;cyl&quot;, &quot;vs&quot;, &quot;am&quot;), disjoin)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["mpg"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["cyl_4"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["cyl_6"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["cyl_8"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["disp"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["hp"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["drat"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["wt"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["qsec"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["vs_0"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["vs_1"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["am_0"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["am_1"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["gear"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["carb"],"name":[15],"type":["dbl"],"align":["right"]}],"data":[{"1":"21.0","2":"0","3":"1","4":"0","5":"160.0","6":"110","7":"3.90","8":"2.620","9":"16.46","10":"1","11":"0","12":"0","13":"1","14":"4","15":"4"},{"1":"21.0","2":"0","3":"1","4":"0","5":"160.0","6":"110","7":"3.90","8":"2.875","9":"17.02","10":"1","11":"0","12":"0","13":"1","14":"4","15":"4"},{"1":"22.8","2":"1","3":"0","4":"0","5":"108.0","6":"93","7":"3.85","8":"2.320","9":"18.61","10":"0","11":"1","12":"0","13":"1","14":"4","15":"1"},{"1":"21.4","2":"0","3":"1","4":"0","5":"258.0","6":"110","7":"3.08","8":"3.215","9":"19.44","10":"0","11":"1","12":"1","13":"0","14":"3","15":"1"},{"1":"18.7","2":"0","3":"0","4":"1","5":"360.0","6":"175","7":"3.15","8":"3.440","9":"17.02","10":"1","11":"0","12":"1","13":"0","14":"3","15":"2"},{"1":"18.1","2":"0","3":"1","4":"0","5":"225.0","6":"105","7":"2.76","8":"3.460","9":"20.22","10":"0","11":"1","12":"1","13":"0","14":"3","15":"1"},{"1":"14.3","2":"0","3":"0","4":"1","5":"360.0","6":"245","7":"3.21","8":"3.570","9":"15.84","10":"1","11":"0","12":"1","13":"0","14":"3","15":"4"},{"1":"24.4","2":"1","3":"0","4":"0","5":"146.7","6":"62","7":"3.69","8":"3.190","9":"20.00","10":"0","11":"1","12":"1","13":"0","14":"4","15":"2"},{"1":"22.8","2":"1","3":"0","4":"0","5":"140.8","6":"95","7":"3.92","8":"3.150","9":"22.90","10":"0","11":"1","12":"1","13":"0","14":"4","15":"2"},{"1":"19.2","2":"0","3":"1","4":"0","5":"167.6","6":"123","7":"3.92","8":"3.440","9":"18.30","10":"0","11":"1","12":"1","13":"0","14":"4","15":"4"},{"1":"17.8","2":"0","3":"1","4":"0","5":"167.6","6":"123","7":"3.92","8":"3.440","9":"18.90","10":"0","11":"1","12":"1","13":"0","14":"4","15":"4"},{"1":"16.4","2":"0","3":"0","4":"1","5":"275.8","6":"180","7":"3.07","8":"4.070","9":"17.40","10":"1","11":"0","12":"1","13":"0","14":"3","15":"3"},{"1":"17.3","2":"0","3":"0","4":"1","5":"275.8","6":"180","7":"3.07","8":"3.730","9":"17.60","10":"1","11":"0","12":"1","13":"0","14":"3","15":"3"},{"1":"15.2","2":"0","3":"0","4":"1","5":"275.8","6":"180","7":"3.07","8":"3.780","9":"18.00","10":"1","11":"0","12":"1","13":"0","14":"3","15":"3"},{"1":"10.4","2":"0","3":"0","4":"1","5":"472.0","6":"205","7":"2.93","8":"5.250","9":"17.98","10":"1","11":"0","12":"1","13":"0","14":"3","15":"4"},{"1":"10.4","2":"0","3":"0","4":"1","5":"460.0","6":"215","7":"3.00","8":"5.424","9":"17.82","10":"1","11":"0","12":"1","13":"0","14":"3","15":"4"},{"1":"14.7","2":"0","3":"0","4":"1","5":"440.0","6":"230","7":"3.23","8":"5.345","9":"17.42","10":"1","11":"0","12":"1","13":"0","14":"3","15":"4"},{"1":"32.4","2":"1","3":"0","4":"0","5":"78.7","6":"66","7":"4.08","8":"2.200","9":"19.47","10":"0","11":"1","12":"0","13":"1","14":"4","15":"1"},{"1":"30.4","2":"1","3":"0","4":"0","5":"75.7","6":"52","7":"4.93","8":"1.615","9":"18.52","10":"0","11":"1","12":"0","13":"1","14":"4","15":"2"},{"1":"33.9","2":"1","3":"0","4":"0","5":"71.1","6":"65","7":"4.22","8":"1.835","9":"19.90","10":"0","11":"1","12":"0","13":"1","14":"4","15":"1"},{"1":"21.5","2":"1","3":"0","4":"0","5":"120.1","6":"97","7":"3.70","8":"2.465","9":"20.01","10":"0","11":"1","12":"1","13":"0","14":"3","15":"1"},{"1":"15.5","2":"0","3":"0","4":"1","5":"318.0","6":"150","7":"2.76","8":"3.520","9":"16.87","10":"1","11":"0","12":"1","13":"0","14":"3","15":"2"},{"1":"15.2","2":"0","3":"0","4":"1","5":"304.0","6":"150","7":"3.15","8":"3.435","9":"17.30","10":"1","11":"0","12":"1","13":"0","14":"3","15":"2"},{"1":"13.3","2":"0","3":"0","4":"1","5":"350.0","6":"245","7":"3.73","8":"3.840","9":"15.41","10":"1","11":"0","12":"1","13":"0","14":"3","15":"4"},{"1":"19.2","2":"0","3":"0","4":"1","5":"400.0","6":"175","7":"3.08","8":"3.845","9":"17.05","10":"1","11":"0","12":"1","13":"0","14":"3","15":"2"},{"1":"27.3","2":"1","3":"0","4":"0","5":"79.0","6":"66","7":"4.08","8":"1.935","9":"18.90","10":"0","11":"1","12":"0","13":"1","14":"4","15":"1"},{"1":"26.0","2":"1","3":"0","4":"0","5":"120.3","6":"91","7":"4.43","8":"2.140","9":"16.70","10":"1","11":"0","12":"0","13":"1","14":"5","15":"2"},{"1":"30.4","2":"1","3":"0","4":"0","5":"95.1","6":"113","7":"3.77","8":"1.513","9":"16.90","10":"0","11":"1","12":"0","13":"1","14":"5","15":"2"},{"1":"15.8","2":"0","3":"0","4":"1","5":"351.0","6":"264","7":"4.22","8":"3.170","9":"14.50","10":"1","11":"0","12":"0","13":"1","14":"5","15":"4"},{"1":"19.7","2":"0","3":"1","4":"0","5":"145.0","6":"175","7":"3.62","8":"2.770","9":"15.50","10":"1","11":"0","12":"0","13":"1","14":"5","15":"6"},{"1":"15.0","2":"0","3":"0","4":"1","5":"301.0","6":"335","7":"3.54","8":"3.570","9":"14.60","10":"1","11":"0","12":"0","13":"1","14":"5","15":"8"},{"1":"21.4","2":"1","3":"0","4":"0","5":"121.0","6":"109","7":"4.11","8":"2.780","9":"18.60","10":"0","11":"1","12":"0","13":"1","14":"4","15":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>imap(.x, .f, …) Aplica .f a cada elemento de una lista o vector y su índice.</p>
+<pre class="r"><code># Note that when using the formula shortcut, the first argument
+# is the value, and the second is the position
+nuevo &lt;- sample(10)
+imap_chr(nuevo, ~ paste0(.y, &quot;: &quot;, .x)) #el 1ro. es indice el 2do es valor</code></pre>
+<pre><code>##  [1] &quot;1: 9&quot;  &quot;2: 8&quot;  &quot;3: 10&quot; &quot;4: 2&quot;  &quot;5: 4&quot;  &quot;6: 1&quot;  &quot;7: 5&quot;  &quot;8: 7&quot;  &quot;9: 6&quot; 
+## [10] &quot;10: 3&quot;</code></pre>
+<pre class="r"><code>iwalk(mtcars, ~ cat(.y, &quot;: &quot;, median(.x), &quot;\n&quot;, sep = &quot;&quot;)) #imprime el nombre y después el valor</code></pre>
+<pre><code>## mpg: 19.2
+## cyl: 6
+## disp: 196.3
+## hp: 123
+## drat: 3.695
+## wt: 3.325
+## qsec: 17.71
+## vs: 0
+## am: 0
+## gear: 4
+## carb: 2</code></pre>
 </div>
 <div id="atajos" class="section level3">
 <h3>Atajos:</h3>
@@ -1869,20 +1938,20 @@ flores %&gt;%
 c(-10, 0, 10, 100) %&gt;% 
   map(~rnorm(n = 10, mean = .x))</code></pre>
 <pre><code>## [[1]]
-##  [1] -11.847329  -8.078182  -9.909160 -11.059785 -10.204016 -10.178103
-##  [7]  -9.324141  -9.110698  -7.921281  -9.917538
+##  [1]  -9.989840 -10.931950 -11.091617  -9.998742 -11.129705 -10.464741
+##  [7] -10.214292 -10.249185 -11.326984 -10.244566
 ## 
 ## [[2]]
-##  [1]  0.15834057 -0.98265282  0.57292405  0.59446503 -0.94719282  0.22077709
-##  [7] -0.67023266 -0.09287585  0.65395169 -0.10087918
+##  [1] -0.31071690 -0.45630520 -2.70911830 -0.48623091  0.32867013  1.69709927
+##  [7] -0.31842237  0.60557449 -0.02880125  1.01057323
 ## 
 ## [[3]]
-##  [1] 10.475091 10.980791  9.247874 11.663322  9.526361 10.531030 10.296370
-##  [8]  9.175094  9.948280  9.416680
+##  [1]  9.335787 13.228487  9.623047 11.282717  9.399262  8.342728 10.599985
+##  [8] 10.416293  8.158720  8.652910
 ## 
 ## [[4]]
-##  [1]  98.34144  99.66115 101.16101 100.11430  98.78349 101.70857 100.21557
-##  [8]  98.28519  99.79933  99.39067</code></pre>
+##  [1] 100.01943 100.82298 100.67695 102.10370  99.48108 100.74205  99.81613
+##  [8] 101.61749 101.57270 101.12194</code></pre>
 <pre class="r"><code>#2. Cómo puedes crear un vector tal que para cada columna en un data frame indique si corresponde o no a un factor?
 
 flores %&gt;% 
@@ -1895,37 +1964,37 @@ flores %&gt;%
 1:5 %&gt;% 
   map(runif)</code></pre>
 <pre><code>## [[1]]
-## [1] 0.6307507
+## [1] 0.6599189
 ## 
 ## [[2]]
-## [1] 0.2063893 0.7176177
+## [1] 0.19049854 0.04554072
 ## 
 ## [[3]]
-## [1] 0.3618515 0.1829044 0.8563607
+## [1] 0.7773901 0.6340927 0.1058812
 ## 
 ## [[4]]
-## [1] 0.9039442 0.7155564 0.8504101 0.8659769
+## [1] 0.8671382 0.7758596 0.5268803 0.2700770
 ## 
 ## [[5]]
-## [1] 0.9418735 0.8241488 0.3828996 0.9860453 0.7412035</code></pre>
+## [1] 0.62352166 0.27917898 0.31010460 0.09154744 0.50087619</code></pre>
 <pre class="r"><code>#4. ¿Qué hace map(-2:2, rnorm, n = 5)? ¿Por qué? ¿Qué hace map_dbl(-2:2, rnorm, n = 5)? ¿Por qué?
 
 -2:2 %&gt;% 
   map(rnorm, n = 5) #5 listas de 5 elementos c/u, cada lista con media que varía de -2:2 </code></pre>
 <pre><code>## [[1]]
-## [1] -2.473059 -2.433261 -2.328198 -1.299045 -2.272480
+## [1] -0.5426770 -0.6610583  0.4933082 -2.7367539 -2.0400516
 ## 
 ## [[2]]
-## [1] -0.69869519 -2.04482166 -0.71701159 -1.03578936  0.05616393
+## [1] -1.2632262 -1.3968884  0.6979318 -1.4562948 -2.5689573
 ## 
 ## [[3]]
-## [1] -1.4474760 -1.1575375 -0.7721854 -1.1515730 -0.2373504
+## [1] -1.1449946 -0.8631116 -1.2063326 -0.4437371 -0.2046366
 ## 
 ## [[4]]
-## [1]  0.7485087  1.2592769  0.7240358  1.5643925 -1.8812489
+## [1]  1.69140412  1.54555615  1.11548021 -1.53344942  0.01819369
 ## 
 ## [[5]]
-## [1] 0.2517537 2.4798007 0.5460902 2.9085546 1.2926236</code></pre>
+## [1] 2.4460079 0.9955036 1.2798193 1.5338558 1.4877064</code></pre>
 <pre class="r"><code># -2:2 %&gt;%
 #   map_dbl(rnorm, n = 5) #quiere generar vector,  pero cada elemento tendría 5 valores. Da error 
 
@@ -2103,9 +2172,9 @@ mu %&gt;%
   map(rnorm, n = 5) %&gt;% 
   str()</code></pre>
 <pre><code>## List of 3
-##  $ : num [1:5] 5.76 5.42 4.5 4.09 5.94
-##  $ : num [1:5] 8.7 10.64 9.36 8.4 10.06
-##  $ : num [1:5] -2.29 -2.86 -2.65 -2.92 -3.02</code></pre>
+##  $ : num [1:5] 4.91 5.35 5.83 5.93 5.91
+##  $ : num [1:5] 10.59 10.88 8.76 9.27 9.49
+##  $ : num [1:5] -3.28 -2.61 -2.66 -4.97 -3.34</code></pre>
 <pre class="r"><code>#Si se quiere también iterar sobre el desvío standard
 #una forma poco elegante de resolver 
 sigma &lt;- list(1, 5, 10)
@@ -2113,15 +2182,15 @@ seq_along(mu) %&gt;%
   map(~rnorm(5, mu[[.x]], sigma[[.x]])) %&gt;% 
   str()</code></pre>
 <pre><code>## List of 3
-##  $ : num [1:5] 5.26 6.39 6.24 4.96 3.59
-##  $ : num [1:5] 9.62 19.2 17.11 9.31 14.58
-##  $ : num [1:5] 5.33 -7.86 -10.01 -2.35 -1.46</code></pre>
+##  $ : num [1:5] 5.05 4.98 5.54 5.15 5.65
+##  $ : num [1:5] 10.31 9.1 6.2 9.55 7.71
+##  $ : num [1:5] -7.5 -3.16 -3.72 -2.47 -23.18</code></pre>
 <pre class="r"><code># más elegante:
 map2(mu, sigma, rnorm, n = 5) %&gt;% str()</code></pre>
 <pre><code>## List of 3
-##  $ : num [1:5] 4.59 6.19 5.1 4.94 4.96
-##  $ : num [1:5] 12.6826 9.5666 13.3808 4.8989 -0.0708
-##  $ : num [1:5] 13.86 -14.81 -16.78 -9.87 -17.06</code></pre>
+##  $ : num [1:5] 5.1 4.68 6.28 5.03 6.01
+##  $ : num [1:5] 19.86 15.26 15.52 9.21 -1.72
+##  $ : num [1:5] 10.4 -4.4 -4.85 18.17 -8</code></pre>
 <pre class="r"><code># IMPORTANTE: los argumentos que varían para cada llamada van antes de la función; argumentos que son los mismos para cada llamada van después.
 
 # para que todos los argumentos se manejen se usa pmap: 
@@ -2132,9 +2201,9 @@ args1 %&gt;%
   pmap(rnorm) %&gt;% 
   str()</code></pre>
 <pre><code>## List of 3
-##  $ : num 4.07
-##  $ : num [1:3] 10.04 12.25 9.11
-##  $ : num [1:5] 3.8 2.9 -19.36 -21.5 -6.98</code></pre>
+##  $ : num 5.09
+##  $ : num [1:3] 4.84 7.43 8.42
+##  $ : num [1:5] -11.22 -8.62 4.4 10.71 7.76</code></pre>
 <pre class="r"><code># Si no nombras todos los elementos de la lista, pmap() usará una coincidencia posicional al llamar la función. Esto es un poco frágil y hace el código más difícil de leer, por lo que es mejor nombrar los argumentos:
 
 args2 &lt;- list(mean = mu, sd = sigma, n = n)
@@ -2142,9 +2211,9 @@ args2 %&gt;%
   pmap(rnorm) %&gt;% 
   str()</code></pre>
 <pre><code>## List of 3
-##  $ : num 4.76
-##  $ : num [1:3] 15.27 11.89 9.11
-##  $ : num [1:5] 2.19 -19.26 1.38 1.32 -4.96</code></pre>
+##  $ : num 6.35
+##  $ : num [1:3] 12.68 7.82 9.56
+##  $ : num [1:5] 9.04 -6.99 -12.4 13.89 2.79</code></pre>
 <pre class="r"><code># Dado que los argumentos son todos del mismo largo, tiene sentido almacenarlos en un dataframe:
 
 params &lt;- tribble(
@@ -2156,13 +2225,13 @@ params &lt;- tribble(
 params %&gt;% 
   pmap(rnorm)</code></pre>
 <pre><code>## [[1]]
-## [1] 5.489844
+## [1] 4.228097
 ## 
 ## [[2]]
-## [1] 12.860182 17.917924  4.601806
+## [1] 16.887917  6.720523 10.903756
 ## 
 ## [[3]]
-## [1]  -8.512370 -19.185533   4.725987  -6.500829  -1.513712</code></pre>
+## [1]  3.0277040 -9.1532425 10.4989624  0.6684675 17.8407760</code></pre>
 </div>
 <div id="invoke_map-invocando-distintas-funciones-para-mapear" class="section level2">
 <h2>invoke_map: Invocando distintas funciones para mapear</h2>
@@ -2179,9 +2248,9 @@ param &lt;- list(
 
 invoke_map(f, param, n = 5) %&gt;% str()</code></pre>
 <pre><code>## List of 3
-##  $ : num [1:5] 0.8376 0.4294 -0.0572 -0.1971 0.183
-##  $ : num [1:5] -3.35 -4.27 -8.33 -3.44 -6.58
-##  $ : int [1:5] 16 11 10 8 13</code></pre>
+##  $ : num [1:5] -0.303 0.166 0.508 0.921 0.109
+##  $ : num [1:5] 0.128 2.539 -1.317 -0.541 -4.579
+##  $ : int [1:5] 11 10 13 10 10</code></pre>
 <pre class="r"><code># O lo que es más elegante, como antes:
 
 sim &lt;- tribble(
@@ -2201,7 +2270,7 @@ sim %&gt;%
 </div>
 <div id="walk" class="section level2">
 <h2>walk()</h2>
-<p>Walk es una alternativa a map que puedes usar cuando quieras llamar a una función por sus efectos colaterales, más que por sobre el valor que devuelve. Típicamente se usa cuando queremos mostrar la salida en pantalla o guardar archivos en el disco. Lo importante es la acción, no el valor resultante.</p>
+<p>Walk es una alternativa a map que puedes usar cuando quieras llamar a una función por sus efectos colaterales, más que por sobre el valor que devuelve. Típicamente se usa cuando queremos mostrar la salida en pantalla o guardar archivos en el disco. Lo importante es la acción, no el valor resultante. walk(.x, .f, …) llama a la función .f por su side-effect y devuelve .x.</p>
 <pre class="r"><code>x &lt;- list(1, &quot;a&quot;, 3)
 
 x %&gt;% 
@@ -2242,13 +2311,13 @@ pwalk(list(paths, plots), ggsave, path = tempdir())</code></pre>
 ##  $ Ancho.Petalo: num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...</code></pre>
 <pre class="r"><code>x &lt;- sample(10)
 x</code></pre>
-<pre><code>##  [1] 10  8  2  7  6  1  5  9  3  4</code></pre>
+<pre><code>##  [1]  2  8  5  1  6  9 10  7  3  4</code></pre>
 <pre class="r"><code>x %&gt;% 
   detect(~ . &gt; 5)</code></pre>
-<pre><code>## [1] 10</code></pre>
+<pre><code>## [1] 8</code></pre>
 <pre class="r"><code>x %&gt;% 
   detect_index(~ . &gt; 5)</code></pre>
-<pre><code>## [1] 1</code></pre>
+<pre><code>## [1] 2</code></pre>
 <pre class="r"><code># If you need to find all values, use keep():
 
 w &lt;- list(
@@ -2276,7 +2345,7 @@ which(map_lgl(w, &quot;foo&quot;))</code></pre>
 <pre><code>## [1] 2 3</code></pre>
 <pre class="r"><code>x %&gt;% 
   head_while(~ .x &gt; 5)</code></pre>
-<pre><code>## [1] 10  8</code></pre>
+<pre><code>## integer(0)</code></pre>
 <pre class="r"><code>x %&gt;% 
   tail_while(~ .x &gt; 5)</code></pre>
 <pre><code>## integer(0)</code></pre>
@@ -2309,27 +2378,203 @@ vs %&gt;% reduce(intersect)</code></pre>
 <p>accumulate() (acumular) es similar, pero mantiene todos los resultados intermedios. Podría usarse para implementar una suma acumulativa:</p>
 <pre class="r"><code>x &lt;- sample(10)
 x</code></pre>
-<pre><code>##  [1]  2  6 10  7  8  1  5  9  3  4</code></pre>
+<pre><code>##  [1]  1  2  9  8  3  7  5 10  6  4</code></pre>
 <pre class="r"><code>x %&gt;% accumulate(`+`)</code></pre>
-<pre><code>##  [1]  2  8 18 25 33 34 39 48 51 55</code></pre>
+<pre><code>##  [1]  1  3 12 20 23 30 35 45 51 55</code></pre>
 <p>##Ejercicios:</p>
 <pre class="r"><code>#1.Implementa tu propia versión de every() usando un bucle for. Compárala con purrr::every(). ¿Qué hace la versión de purrr que la tuya no?
 
-evry &lt;- function(x, p) {
- for (i in .x) {
-  if(.p(i)) {
-    TRUE
-  } else {
-    FALSE
-    break
-    }
+every2 &lt;- function(x, p, ...) {
+  for (i in x) {
+      if(p(i,...)) {
+        a &lt;- TRUE
+      } else {
+        a &lt;- FALSE
+        break
+      }
   }
-} 
+  a
+  } 
 
-eje1 &lt;- c(1, 4, 5, 3, 6, 7, 8, 9)
-condic1 &lt;- &quot;is.numeric&quot;
 
-#evry(eje1, condic1)</code></pre>
+s &lt;- every2(letters, function(y) {
+  is.numeric(y)
+})</code></pre>
+</div>
+<div id="otras-funciones-de-purrr" class="section level2">
+<h2>Otras funciones de PURRR:</h2>
+<p><strong>pluck()</strong> extrae un element de una lista, * por name * por posición * por atributo con attr_getter * También acepta funciones “accesor” (estos accesor nunca con acceso parcial)</p>
+<p>Devuelve todo el contenido del elemento como está, sin envolverlo en una nueva lista.</p>
+<p>Por default, pluck retorna “NULL” si un elemento no existe, pero se le puede decir que de devuelva otro valor con .default = NA. Para que de error, usar chuck() en vez de pluck() pluck(.x, …, .default=NULL): Selecciona un elemento * por nombre o índice, pluck(x,“b”) * ,o su atributo con attr_getter.</p>
+<pre class="r"><code>obj1 &lt;- list(&quot;a&quot;, list(1, elt = &quot;foo&quot;))
+obj2 &lt;- list(&quot;b&quot;, list(2, elt = &quot;bar&quot;))
+x &lt;- list(obj1, obj2)
+
+rec &lt;- pluck(x, 1)   # devuelve 1er lista
+# idem a x[[1]]
+
+pluck(x, 1, 2)      # devuelve 2 elemento de 1 lista</code></pre>
+<pre><code>## [[1]]
+## [1] 1
+## 
+## $elt
+## [1] &quot;foo&quot;</code></pre>
+<pre class="r"><code>#idem x[[1]][[2]]
+
+pluck(x, 10)</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>pluck(x, 10, .default = NA)</code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code>#chuck(x, 10)  # si se quiere obtener error en vez de null cdo no se encuentra
+#try(chuck(x, 10))
+
+#accessor:
+# pluck() also supports accessor functions:
+my_element &lt;- function(x) x[[2]]$elt
+
+# The accessor can then be passed to pluck:
+pluck(x, 1, my_element)</code></pre>
+<pre><code>## [1] &quot;foo&quot;</code></pre>
+<pre class="r"><code>pluck(x, 2, my_element)</code></pre>
+<pre><code>## [1] &quot;bar&quot;</code></pre>
+<pre class="r"><code># If you have a list of accessors, you can splice those in with `!!!`:
+idx &lt;- list(1, my_element)
+pluck(x, !!!idx)</code></pre>
+<pre><code>## [1] &quot;foo&quot;</code></pre>
+<pre class="r"><code>#attr_getter
+get_rownames &lt;- attr_getter(&quot;row.names&quot;)
+get_rownames(mtcars)</code></pre>
+<pre><code>##  [1] &quot;Mazda RX4&quot;           &quot;Mazda RX4 Wag&quot;       &quot;Datsun 710&quot;         
+##  [4] &quot;Hornet 4 Drive&quot;      &quot;Hornet Sportabout&quot;   &quot;Valiant&quot;            
+##  [7] &quot;Duster 360&quot;          &quot;Merc 240D&quot;           &quot;Merc 230&quot;           
+## [10] &quot;Merc 280&quot;            &quot;Merc 280C&quot;           &quot;Merc 450SE&quot;         
+## [13] &quot;Merc 450SL&quot;          &quot;Merc 450SLC&quot;         &quot;Cadillac Fleetwood&quot; 
+## [16] &quot;Lincoln Continental&quot; &quot;Chrysler Imperial&quot;   &quot;Fiat 128&quot;           
+## [19] &quot;Honda Civic&quot;         &quot;Toyota Corolla&quot;      &quot;Toyota Corona&quot;      
+## [22] &quot;Dodge Challenger&quot;    &quot;AMC Javelin&quot;         &quot;Camaro Z28&quot;         
+## [25] &quot;Pontiac Firebird&quot;    &quot;Fiat X1-9&quot;           &quot;Porsche 914-2&quot;      
+## [28] &quot;Lotus Europa&quot;        &quot;Ford Pantera L&quot;      &quot;Ferrari Dino&quot;       
+## [31] &quot;Maserati Bora&quot;       &quot;Volvo 142E&quot;</code></pre>
+<pre class="r"><code>obj1 &lt;- structure(&quot;obj&quot;, obj_attr = &quot;foo&quot;)
+obj2 &lt;- structure(&quot;obj&quot;, obj_attr = &quot;bar&quot;)
+x1 &lt;- list(obj1, obj2)
+
+pluck(x1, 1, attr_getter(&quot;obj_attr&quot;))  # From first object</code></pre>
+<pre><code>## [1] &quot;foo&quot;</code></pre>
+<pre class="r"><code>pluck(x1, 2, attr_getter(&quot;obj_attr&quot;))  # From second object</code></pre>
+<pre><code>## [1] &quot;bar&quot;</code></pre>
+<p><strong>compact()</strong> es un wrapper util para remover los elementos vacios.</p>
+<pre class="r"><code># Using a string instead of a function will select all list elements
+# where that subelement is TRUE
+x_nue &lt;- rerun(5, a = rbernoulli(1), b = sample(10))
+print(&quot;x_nue&quot;)</code></pre>
+<pre><code>## [1] &quot;x_nue&quot;</code></pre>
+<pre class="r"><code>x_nue</code></pre>
+<pre><code>## [[1]]
+## [[1]]$a
+## [1] TRUE
+## 
+## [[1]]$b
+##  [1]  4  7  2  6  9  5  3  1 10  8
+## 
+## 
+## [[2]]
+## [[2]]$a
+## [1] TRUE
+## 
+## [[2]]$b
+##  [1]  1  7  2  6  9  8  5 10  3  4
+## 
+## 
+## [[3]]
+## [[3]]$a
+## [1] FALSE
+## 
+## [[3]]$b
+##  [1]  2 10  3  6  5  8  9  7  1  4
+## 
+## 
+## [[4]]
+## [[4]]$a
+## [1] FALSE
+## 
+## [[4]]$b
+##  [1] 10  1  3  9  8  4  5  2  7  6
+## 
+## 
+## [[5]]
+## [[5]]$a
+## [1] FALSE
+## 
+## [[5]]$b
+##  [1]  8  5  9  2  4  6  1 10  3  7</code></pre>
+<pre class="r"><code>print(&quot;keep a&quot;)</code></pre>
+<pre><code>## [1] &quot;keep a&quot;</code></pre>
+<pre class="r"><code>x_nue %&gt;% keep(&quot;a&quot;)</code></pre>
+<pre><code>## [[1]]
+## [[1]]$a
+## [1] TRUE
+## 
+## [[1]]$b
+##  [1]  4  7  2  6  9  5  3  1 10  8
+## 
+## 
+## [[2]]
+## [[2]]$a
+## [1] TRUE
+## 
+## [[2]]$b
+##  [1]  1  7  2  6  9  8  5 10  3  4</code></pre>
+<pre class="r"><code>print(&quot;discard a&quot;)</code></pre>
+<pre><code>## [1] &quot;discard a&quot;</code></pre>
+<pre class="r"><code>x_nue %&gt;% discard(&quot;a&quot;)</code></pre>
+<pre><code>## [[1]]
+## [[1]]$a
+## [1] FALSE
+## 
+## [[1]]$b
+##  [1]  2 10  3  6  5  8  9  7  1  4
+## 
+## 
+## [[2]]
+## [[2]]$a
+## [1] FALSE
+## 
+## [[2]]$b
+##  [1] 10  1  3  9  8  4  5  2  7  6
+## 
+## 
+## [[3]]
+## [[3]]$a
+## [1] FALSE
+## 
+## [[3]]$b
+##  [1]  8  5  9  2  4  6  1 10  3  7</code></pre>
+<pre class="r"><code># compact() discards elements that are NULL or that have length zero
+print(&quot;compact&quot;)</code></pre>
+<pre><code>## [1] &quot;compact&quot;</code></pre>
+<pre class="r"><code>list(a = &quot;a&quot;, b = NULL, c = integer(0), d = NA, e = list()) %&gt;%
+  compact()</code></pre>
+<pre><code>## $a
+## [1] &quot;a&quot;
+## 
+## $d
+## [1] NA</code></pre>
+<p>flatten(.x) Elimina un nivel de índices de una lista. También flatten_chr, flatten_dbl, flatten_dfc, flatten_dfr, flatten_int, flatten_lgl. flatten(x)</p>
+<p>has_element(.x, .y) ¿Contiene la lista un elemento? has_element(x, “foo”)</p>
+<p>depth(x) Devuelve profundidad (número de niveles o índices). depth(x)</p>
+</div>
+<div id="unir-listas" class="section level2">
+<h2>Unir Listas</h2>
+<p>append(x, values, after = length(x)) Añade al final de una length(x)) Añade al final de una lista. append(x, list(d = 1)) prepend(x, values, before = 1) Añade al principio de una lista. prepend(x, list(d = 1)) splice(…) Combina objetos en una lista, almacena objetos S3 como sub-listas. splice(x, y, “foo”)</p>
+</div>
+<div id="transformar-listas" class="section level2">
+<h2>Transformar listas</h2>
+<p>modify(.x, .f, …) Aplica una función a cada elemento. También map, map_chr, map_dbl, map_dfc, map_dfr, map_int, map_lgl. modify(x, ~.+ 2) modify_at(.x, .at, .f, …) Aplica una función a los elementos por nombre o índice. También map_at. modify_at(x, “b”, ~.+ 2) modify_if(.x, .p, .f, …) Aplica una función a los elementos que pasan una prueba. También map_if. modify_if(x, is.numeric,~.+2) modify_depth(.x,.depth,.f,…) Aplica una función a cada elemento y un nivel dado de una lista. modify_depth(x, 1, ~.+ 2)</p>
+</div>
+<div id="trabajar-con-listas" class="section level2">
+<h2>TRABAJAR CON LISTAS</h2>
+<p>array_tree(array, margin = NULL) Convierte una matriz en una lista. También array_branch. array_tree(x, margin = 3) cross2(.x, .y, .filter = NULL) Todas las combinaciones de .x e .y. También cross, cross3, cross_df. cross2(1:3, 4:6) set_names(x, nm = x) Fija el nombre de un vector/lista directamente o con una función. set_names(x, c(“p”, “q”, “r”)) set_names(x, tolower)</p>
 </div>
 
 
