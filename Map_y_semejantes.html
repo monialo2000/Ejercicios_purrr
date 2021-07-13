@@ -1693,7 +1693,7 @@ for (i in seq_along(medias)) {
   output &lt;- c(output, rnorm(n, medias[[i]]))
 }
 str(output)</code></pre>
-<pre><code>##  num [1:81] 0.0264 -0.6025 1.8208 1.205 -0.0614 ...</code></pre>
+<pre><code>##  num [1:111] 2.428 0.294 1.253 1.285 -0.607 ...</code></pre>
 <pre class="r"><code>#&gt;  num [1:138] 0.912 0.205 2.584 -0.789 0.588 ...</code></pre>
 <p><strong>Una mejor solución es guardar los resultados en una lista y luego combinarlos en un solo vector una vez que se complete el ciclo:</strong></p>
 <pre class="r"><code>out &lt;- vector(&quot;list&quot;, length(medias))
@@ -1703,15 +1703,15 @@ for (i in seq_along(medias)) {
 }
 str(out)</code></pre>
 <pre><code>## List of 3
-##  $ : num [1:90] 0.362 -0.857 -0.252 -0.187 -0.779 ...
-##  $ : num [1:42] -1.36 0.337 1.23 0.906 2.53 ...
-##  $ : num [1:54] 2.12 2.33 3.46 1.2 2.95 ...</code></pre>
+##  $ : num [1:25] 0.83684 -0.01459 0.24531 -0.00202 -0.12185 ...
+##  $ : num [1:47] 1.596 -0.722 0.849 1.741 1.658 ...
+##  $ : num [1:5] 1.269 2.279 2.734 2.06 0.971</code></pre>
 <pre class="r"><code>out_vector &lt;- unlist(out)
 str(out_vector)</code></pre>
-<pre><code>##  num [1:186] 0.362 -0.857 -0.252 -0.187 -0.779 ...</code></pre>
+<pre><code>##  num [1:77] 0.83684 -0.01459 0.24531 -0.00202 -0.12185 ...</code></pre>
 <pre class="r"><code>out_vector &lt;- purrr::flatten_dbl(out)
 str(out_vector)</code></pre>
-<pre><code>##  num [1:186] 0.362 -0.857 -0.252 -0.187 -0.779 ...</code></pre>
+<pre><code>##  num [1:77] 0.83684 -0.01459 0.24531 -0.00202 -0.12185 ...</code></pre>
 </div>
 <div id="while" class="section level3">
 <h3>While</h3>
@@ -1729,7 +1729,7 @@ while (ncaras &lt; 3) {
   lanzamientos &lt;- lanzamientos + 1
 }
 lanzamientos</code></pre>
-<pre><code>## [1] 5</code></pre>
+<pre><code>## [1] 12</code></pre>
 <p>Los bucles for no son tan importantes en R como en otros lenguajes porque R es un lenguaje de programación funcional. Esto significa que es posible envolver los bucles en una función y llamar a esa función en lugar de usar el bucle for directamente.</p>
 <pre class="r"><code>col_resumen &lt;- function(df, fun) {
   out &lt;- vector(&quot;double&quot;, length(df))
@@ -1758,22 +1758,22 @@ col_resumen(mtautos, mean)</code></pre>
 <p>El patrón de iterar sobre un vector, hacer algo con cada elemento y guardar los resultados es tan común que el paquete purrr proporciona una familia de funciones que lo hacen por ti. Nunca debes sentirse mal por usar un bucle for en lugar de una función map. Las funciones map son un nivel superior de abstracción y puede llevar mucho tiempo entender cómo funcionan. Los principales beneficios de usar funciones como map () no es la velocidad, sino la claridad: hacen que tu código sea más fácil de escribir y leer.</p>
 <pre class="r"><code>map_dbl(df, mean) # media</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.3408533 0.5717009 0.5239053 0.5155702</code></pre>
+## 0.6122582 0.5854929 0.4233018 0.6495413</code></pre>
 <pre class="r"><code>map_dbl(df, median) # mediana</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.2480994 0.5440493 0.5409424 0.5142808</code></pre>
+## 0.6906590 0.6232765 0.4158145 0.6489749</code></pre>
 <pre class="r"><code>map_dbl(df, sd) # standard deviation</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.3272576 0.3215052 0.2970244 0.3453767</code></pre>
+## 0.3722974 0.2593609 0.2836699 0.2866162</code></pre>
 <pre class="r"><code>df %&gt;% map_dbl(mean)</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.3408533 0.5717009 0.5239053 0.5155702</code></pre>
+## 0.6122582 0.5854929 0.4233018 0.6495413</code></pre>
 <pre class="r"><code>df %&gt;% map_dbl(median)</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.2480994 0.5440493 0.5409424 0.5142808</code></pre>
+## 0.6906590 0.6232765 0.4158145 0.6489749</code></pre>
 <pre class="r"><code>df %&gt;% map_dbl(sd)</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.3272576 0.3215052 0.2970244 0.3453767</code></pre>
+## 0.3722974 0.2593609 0.2836699 0.2866162</code></pre>
 <div id="map_-vs.-col_resumen" class="section level3">
 <h3>map_ vs. col_resumen()</h3>
 <p>Existen algunas diferencias entre map _ * () y col_resumen():</p>
@@ -1785,7 +1785,7 @@ col_resumen(mtautos, mean)</code></pre>
 </ul>
 <pre class="r"><code>map_dbl(df, mean, trim = 0.5)</code></pre>
 <pre><code>##         a         b         c         d 
-## 0.2480994 0.5440493 0.5409424 0.5142808</code></pre>
+## 0.6906590 0.6232765 0.4158145 0.6489749</code></pre>
 <pre class="r"><code>#&gt;           a           b           c           d 
 #&gt; -0.51850298  0.02779864  0.17295591 -0.61163819</code></pre>
 <p>Otras funciones map que existen:</p>
@@ -1833,8 +1833,8 @@ iris %&gt;% lmap_if(is.factor, disjoin)</code></pre>
 # is the value, and the second is the position
 nuevo &lt;- sample(10)
 imap_chr(nuevo, ~ paste0(.y, &quot;: &quot;, .x)) #el 1ro. es indice el 2do es valor</code></pre>
-<pre><code>##  [1] &quot;1: 9&quot;  &quot;2: 8&quot;  &quot;3: 10&quot; &quot;4: 2&quot;  &quot;5: 4&quot;  &quot;6: 1&quot;  &quot;7: 5&quot;  &quot;8: 7&quot;  &quot;9: 6&quot; 
-## [10] &quot;10: 3&quot;</code></pre>
+<pre><code>##  [1] &quot;1: 8&quot;  &quot;2: 5&quot;  &quot;3: 2&quot;  &quot;4: 3&quot;  &quot;5: 4&quot;  &quot;6: 10&quot; &quot;7: 9&quot;  &quot;8: 6&quot;  &quot;9: 7&quot; 
+## [10] &quot;10: 1&quot;</code></pre>
 <pre class="r"><code>iwalk(mtcars, ~ cat(.y, &quot;: &quot;, median(.x), &quot;\n&quot;, sep = &quot;&quot;)) #imprime el nombre y después el valor</code></pre>
 <pre><code>## mpg: 19.2
 ## cyl: 6
@@ -1857,7 +1857,15 @@ imap_chr(nuevo, ~ paste0(.y, &quot;: &quot;, .x)) #el 1ro. es indice el 2do es v
 
 modelos &lt;- mtautos %&gt;% 
   split(.$cilindros) %&gt;% 
-  map(~lm(millas ~ peso, data = .x))</code></pre>
+  map(~lm(millas ~ peso, data = .x))
+
+mtcars %&gt;%
+  split(.$cyl) %&gt;% # from base R
+  map(~ lm(mpg ~ wt, data = .)) %&gt;%
+  map(summary) %&gt;%
+  map_dbl(&quot;r.squared&quot;)</code></pre>
+<pre><code>##         4         6         8 
+## 0.5086326 0.4645102 0.4229655</code></pre>
 <p>La sintaxis para crear una función anónima en R es bastante verbosa, por lo que purrr provee un atajo conveniente: una fórmula unilateral.<br />
 <strong>Hemos usado . como pronombre: se refiere al elemento actual de la lista</strong> (del mismo modo que i se refiere al índice actual en el loop for). .x corresponde al argumento de una función anónima. #### Ejemplo Cuando examinas múltiples modelos, puedes querer extraer un estadístico resumen como lo es R_cuadrado. Para hacer eso primero necesitas correr summary() y luego extraer la componente r.squared (R-cuadrado). Podríamos hacerlo usando un atajo para las funciones anónimas:</p>
 <pre class="r"><code>modelos %&gt;% 
@@ -1938,20 +1946,20 @@ flores %&gt;%
 c(-10, 0, 10, 100) %&gt;% 
   map(~rnorm(n = 10, mean = .x))</code></pre>
 <pre><code>## [[1]]
-##  [1]  -9.989840 -10.931950 -11.091617  -9.998742 -11.129705 -10.464741
-##  [7] -10.214292 -10.249185 -11.326984 -10.244566
+##  [1] -11.155310  -8.664863  -9.290289  -8.988815  -9.118909  -7.810436
+##  [7]  -8.361121  -8.918523  -7.958060 -11.749262
 ## 
 ## [[2]]
-##  [1] -0.31071690 -0.45630520 -2.70911830 -0.48623091  0.32867013  1.69709927
-##  [7] -0.31842237  0.60557449 -0.02880125  1.01057323
+##  [1] -2.2674316 -0.4758545  1.2332681 -1.3460394  1.3623553  0.8543283
+##  [7]  0.3363701  1.4262479 -1.1578613  0.5992408
 ## 
 ## [[3]]
-##  [1]  9.335787 13.228487  9.623047 11.282717  9.399262  8.342728 10.599985
-##  [8] 10.416293  8.158720  8.652910
+##  [1] 10.586662  8.363417  9.918491 10.657966 10.662058  8.912263  8.062319
+##  [8]  9.429123 11.097413  8.430568
 ## 
 ## [[4]]
-##  [1] 100.01943 100.82298 100.67695 102.10370  99.48108 100.74205  99.81613
-##  [8] 101.61749 101.57270 101.12194</code></pre>
+##  [1]  99.62868 100.44061 101.14063  99.92253  99.01975 101.99339 100.36035
+##  [8] 100.12337 100.79946  98.84575</code></pre>
 <pre class="r"><code>#2. Cómo puedes crear un vector tal que para cada columna en un data frame indique si corresponde o no a un factor?
 
 flores %&gt;% 
@@ -1964,37 +1972,37 @@ flores %&gt;%
 1:5 %&gt;% 
   map(runif)</code></pre>
 <pre><code>## [[1]]
-## [1] 0.6599189
+## [1] 0.3391341
 ## 
 ## [[2]]
-## [1] 0.19049854 0.04554072
+## [1] 0.1238016 0.2832678
 ## 
 ## [[3]]
-## [1] 0.7773901 0.6340927 0.1058812
+## [1] 0.6685978 0.6758573 0.4533936
 ## 
 ## [[4]]
-## [1] 0.8671382 0.7758596 0.5268803 0.2700770
+## [1] 0.96971340 0.18150676 0.06665016 0.89067516
 ## 
 ## [[5]]
-## [1] 0.62352166 0.27917898 0.31010460 0.09154744 0.50087619</code></pre>
+## [1] 0.92939500 0.04891298 0.95018521 0.53995577 0.03706209</code></pre>
 <pre class="r"><code>#4. ¿Qué hace map(-2:2, rnorm, n = 5)? ¿Por qué? ¿Qué hace map_dbl(-2:2, rnorm, n = 5)? ¿Por qué?
 
 -2:2 %&gt;% 
   map(rnorm, n = 5) #5 listas de 5 elementos c/u, cada lista con media que varía de -2:2 </code></pre>
 <pre><code>## [[1]]
-## [1] -0.5426770 -0.6610583  0.4933082 -2.7367539 -2.0400516
+## [1] -1.4847973 -0.9752193 -0.9363168 -2.0738640 -1.2302261
 ## 
 ## [[2]]
-## [1] -1.2632262 -1.3968884  0.6979318 -1.4562948 -2.5689573
+## [1] -0.9281883  0.2654937 -0.4334401 -1.7915949 -0.8925479
 ## 
 ## [[3]]
-## [1] -1.1449946 -0.8631116 -1.2063326 -0.4437371 -0.2046366
+## [1] -0.4006064 -0.2583008  1.3077848  1.2768239 -1.0905535
 ## 
 ## [[4]]
-## [1]  1.69140412  1.54555615  1.11548021 -1.53344942  0.01819369
+## [1] -0.16262846  2.01448378  1.15424339 -0.04904636  0.80075719
 ## 
 ## [[5]]
-## [1] 2.4460079 0.9955036 1.2798193 1.5338558 1.4877064</code></pre>
+## [1] 0.8724876 0.9354622 1.6581100 3.2572992 1.2880575</code></pre>
 <pre class="r"><code># -2:2 %&gt;%
 #   map_dbl(rnorm, n = 5) #quiere generar vector,  pero cada elemento tendría 5 valores. Da error 
 
@@ -2033,6 +2041,11 @@ mtautos %&gt;%
 ##      23.868       -2.192</code></pre>
 <pre class="r"><code>#en el formato solicitado sería:
 #map(x, ~lm(millas ~ peso, data = .))</code></pre>
+</div>
+</div>
+</div>
+<div id="resumir-listas" class="section level2">
+<h2>Resumir Listas:</h2>
 <pre class="r"><code>y &lt;- list(0:10, 5.5)
 y %&gt;% every(is.numeric)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
@@ -2045,9 +2058,15 @@ y %&gt;% some(is.integer)</code></pre>
 <pre class="r"><code>#&gt; [1] TRUE
 y %&gt;% none(is.character)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code>#&gt; [1] TRUE</code></pre>
-</div>
-</div>
+<pre class="r"><code>#&gt; [1] TRUE
+
+
+y %&gt;% has_element(5) #no lo encuentra porque busca elemento completo</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>y %&gt;% has_element(0:10) #si lo encuentra porque es el elemento completo</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># depth(x) Devuelve profundidad (número de niveles o índices).
+# purrr::depth(y)     no la encuentra como funcion</code></pre>
 </div>
 <div id="r-base-lapply-y-sapply" class="section level2">
 <h2>R Base: lapply() y sapply()</h2>
@@ -2172,9 +2191,9 @@ mu %&gt;%
   map(rnorm, n = 5) %&gt;% 
   str()</code></pre>
 <pre><code>## List of 3
-##  $ : num [1:5] 4.91 5.35 5.83 5.93 5.91
-##  $ : num [1:5] 10.59 10.88 8.76 9.27 9.49
-##  $ : num [1:5] -3.28 -2.61 -2.66 -4.97 -3.34</code></pre>
+##  $ : num [1:5] 4.4 3.27 5.53 5.13 4.06
+##  $ : num [1:5] 9.87 11.73 9.13 10.88 9.28
+##  $ : num [1:5] -3.02 -3.26 -2.35 -2.2 -1.84</code></pre>
 <pre class="r"><code>#Si se quiere también iterar sobre el desvío standard
 #una forma poco elegante de resolver 
 sigma &lt;- list(1, 5, 10)
@@ -2182,15 +2201,15 @@ seq_along(mu) %&gt;%
   map(~rnorm(5, mu[[.x]], sigma[[.x]])) %&gt;% 
   str()</code></pre>
 <pre><code>## List of 3
-##  $ : num [1:5] 5.05 4.98 5.54 5.15 5.65
-##  $ : num [1:5] 10.31 9.1 6.2 9.55 7.71
-##  $ : num [1:5] -7.5 -3.16 -3.72 -2.47 -23.18</code></pre>
+##  $ : num [1:5] 5.59 5.37 4.18 7.01 4.16
+##  $ : num [1:5] 16.92 12.17 10.91 8.59 14.69
+##  $ : num [1:5] -25.94 7.34 8.67 -8.39 11.2</code></pre>
 <pre class="r"><code># más elegante:
 map2(mu, sigma, rnorm, n = 5) %&gt;% str()</code></pre>
 <pre><code>## List of 3
-##  $ : num [1:5] 5.1 4.68 6.28 5.03 6.01
-##  $ : num [1:5] 19.86 15.26 15.52 9.21 -1.72
-##  $ : num [1:5] 10.4 -4.4 -4.85 18.17 -8</code></pre>
+##  $ : num [1:5] 4.55 6.33 3.65 5.29 5.58
+##  $ : num [1:5] 2.82 6.34 12.44 18.72 14.14
+##  $ : num [1:5] -0.441 -9.746 -5.311 -0.864 -3.605</code></pre>
 <pre class="r"><code># IMPORTANTE: los argumentos que varían para cada llamada van antes de la función; argumentos que son los mismos para cada llamada van después.
 
 # para que todos los argumentos se manejen se usa pmap: 
@@ -2201,9 +2220,9 @@ args1 %&gt;%
   pmap(rnorm) %&gt;% 
   str()</code></pre>
 <pre><code>## List of 3
-##  $ : num 5.09
-##  $ : num [1:3] 4.84 7.43 8.42
-##  $ : num [1:5] -11.22 -8.62 4.4 10.71 7.76</code></pre>
+##  $ : num 5.52
+##  $ : num [1:3] 9.91 10.57 21.28
+##  $ : num [1:5] -5.86 -4.56 -10.09 4.2 14.93</code></pre>
 <pre class="r"><code># Si no nombras todos los elementos de la lista, pmap() usará una coincidencia posicional al llamar la función. Esto es un poco frágil y hace el código más difícil de leer, por lo que es mejor nombrar los argumentos:
 
 args2 &lt;- list(mean = mu, sd = sigma, n = n)
@@ -2211,9 +2230,9 @@ args2 %&gt;%
   pmap(rnorm) %&gt;% 
   str()</code></pre>
 <pre><code>## List of 3
-##  $ : num 6.35
-##  $ : num [1:3] 12.68 7.82 9.56
-##  $ : num [1:5] 9.04 -6.99 -12.4 13.89 2.79</code></pre>
+##  $ : num 4.03
+##  $ : num [1:3] 1.97 13.43 15.69
+##  $ : num [1:5] 2.86 -10.53 4.29 -7.17 -12.53</code></pre>
 <pre class="r"><code># Dado que los argumentos son todos del mismo largo, tiene sentido almacenarlos en un dataframe:
 
 params &lt;- tribble(
@@ -2225,13 +2244,13 @@ params &lt;- tribble(
 params %&gt;% 
   pmap(rnorm)</code></pre>
 <pre><code>## [[1]]
-## [1] 4.228097
+## [1] 3.807297
 ## 
 ## [[2]]
-## [1] 16.887917  6.720523 10.903756
+## [1]  4.451052 14.217744  9.382744
 ## 
 ## [[3]]
-## [1]  3.0277040 -9.1532425 10.4989624  0.6684675 17.8407760</code></pre>
+## [1] -13.7287436  -0.7481171  -6.1651305 -20.6965613  -2.5039833</code></pre>
 </div>
 <div id="invoke_map-invocando-distintas-funciones-para-mapear" class="section level2">
 <h2>invoke_map: Invocando distintas funciones para mapear</h2>
@@ -2248,9 +2267,9 @@ param &lt;- list(
 
 invoke_map(f, param, n = 5) %&gt;% str()</code></pre>
 <pre><code>## List of 3
-##  $ : num [1:5] -0.303 0.166 0.508 0.921 0.109
-##  $ : num [1:5] 0.128 2.539 -1.317 -0.541 -4.579
-##  $ : int [1:5] 11 10 13 10 10</code></pre>
+##  $ : num [1:5] 0.2888 0.9879 0.6509 0.0708 -0.8073
+##  $ : num [1:5] 4.397 1.994 8.404 -2.499 -0.628
+##  $ : int [1:5] 13 7 9 14 8</code></pre>
 <pre class="r"><code># O lo que es más elegante, como antes:
 
 sim &lt;- tribble(
@@ -2291,65 +2310,6 @@ pwalk(list(paths, plots), ggsave, path = tempdir())</code></pre>
 ## Saving 7 x 5 in image</code></pre>
 <p>walk(), walk2() y pwalk() devuelven de forma invisible ., el primer argumento. Esto las hace adecuadas para usar dentro de cadenas de pipes.</p>
 </div>
-<div id="funciones-predictivas" class="section level2">
-<h2>Funciones Predictivas:</h2>
-<p>Algunas funciones trabajan con funciones predicativas que entregan un único valor TRUE o FALSE.</p>
-<p>keep() y discard() mantienen los elementos de la entrada donde el predicado es TRUE o FALSE, respectivamente. detect() encuentra el primer elemento donde el predicado es verdadero; detect_index() entrega su posición.</p>
-<p>head_while() y tail_while() toman elementos al inicio y final de un vector cuando el predicado es verdadero:</p>
-<pre class="r"><code>flores %&gt;% 
-  keep(is.factor) %&gt;% 
-  str()</code></pre>
-<pre><code>## &#39;data.frame&#39;:    150 obs. of  1 variable:
-##  $ Especies: Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
-<pre class="r"><code>flores %&gt;% 
-  discard(is.factor) %&gt;% 
-  str()</code></pre>
-<pre><code>## &#39;data.frame&#39;:    150 obs. of  4 variables:
-##  $ Largo.Sepalo: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
-##  $ Ancho.Sepalo: num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
-##  $ Largo.Petalo: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
-##  $ Ancho.Petalo: num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...</code></pre>
-<pre class="r"><code>x &lt;- sample(10)
-x</code></pre>
-<pre><code>##  [1]  2  8  5  1  6  9 10  7  3  4</code></pre>
-<pre class="r"><code>x %&gt;% 
-  detect(~ . &gt; 5)</code></pre>
-<pre><code>## [1] 8</code></pre>
-<pre class="r"><code>x %&gt;% 
-  detect_index(~ . &gt; 5)</code></pre>
-<pre><code>## [1] 2</code></pre>
-<pre class="r"><code># If you need to find all values, use keep():
-
-w &lt;- list(
-  list(1, foo = FALSE),
-  list(2, foo = TRUE),
-  list(3, foo = TRUE)
-)
-keep(w, &quot;foo&quot;)</code></pre>
-<pre><code>## [[1]]
-## [[1]][[1]]
-## [1] 2
-## 
-## [[1]]$foo
-## [1] TRUE
-## 
-## 
-## [[2]]
-## [[2]][[1]]
-## [1] 3
-## 
-## [[2]]$foo
-## [1] TRUE</code></pre>
-<pre class="r"><code># If you need to find all positions, use map_lgl():
-which(map_lgl(w, &quot;foo&quot;))</code></pre>
-<pre><code>## [1] 2 3</code></pre>
-<pre class="r"><code>x %&gt;% 
-  head_while(~ .x &gt; 5)</code></pre>
-<pre><code>## integer(0)</code></pre>
-<pre class="r"><code>x %&gt;% 
-  tail_while(~ .x &gt; 5)</code></pre>
-<pre><code>## integer(0)</code></pre>
-</div>
 <div id="reducir-y-acumular" class="section level2">
 <h2>Reducir y acumular</h2>
 <p>La función reduce() (reducir) toma una función “binaria” (e.g. una función con dos inputs primarios) y la aplica repetidamente a una lista hasta que quede un solo elemento.</p>
@@ -2378,9 +2338,9 @@ vs %&gt;% reduce(intersect)</code></pre>
 <p>accumulate() (acumular) es similar, pero mantiene todos los resultados intermedios. Podría usarse para implementar una suma acumulativa:</p>
 <pre class="r"><code>x &lt;- sample(10)
 x</code></pre>
-<pre><code>##  [1]  1  2  9  8  3  7  5 10  6  4</code></pre>
+<pre><code>##  [1]  8  5  3  4  9  1  7  6  2 10</code></pre>
 <pre class="r"><code>x %&gt;% accumulate(`+`)</code></pre>
-<pre><code>##  [1]  1  3 12 20 23 30 35 45 51 55</code></pre>
+<pre><code>##  [1]  8 13 16 20 29 30 37 43 45 55</code></pre>
 <p>##Ejercicios:</p>
 <pre class="r"><code>#1.Implementa tu propia versión de every() usando un bucle for. Compárala con purrr::every(). ¿Qué hace la versión de purrr que la tuya no?
 
@@ -2401,8 +2361,8 @@ s &lt;- every2(letters, function(y) {
   is.numeric(y)
 })</code></pre>
 </div>
-<div id="otras-funciones-de-purrr" class="section level2">
-<h2>Otras funciones de PURRR:</h2>
+<div id="filtrar-listas" class="section level2">
+<h2>Filtrar listas:</h2>
 <p><strong>pluck()</strong> extrae un element de una lista, * por name * por posición * por atributo con attr_getter * También acepta funciones “accesor” (estos accesor nunca con acceso parcial)</p>
 <p>Devuelve todo el contenido del elemento como está, sin envolverlo en una nueva lista.</p>
 <p>Por default, pluck retorna “NULL” si un elemento no existe, pero se le puede decir que de devuelva otro valor con .default = NA. Para que de error, usar chuck() en vez de pluck() pluck(.x, …, .default=NULL): Selecciona un elemento * por nombre o índice, pluck(x,“b”) * ,o su atributo con attr_getter.</p>
@@ -2463,6 +2423,89 @@ pluck(x1, 1, attr_getter(&quot;obj_attr&quot;))  # From first object</code></pre
 <pre><code>## [1] &quot;foo&quot;</code></pre>
 <pre class="r"><code>pluck(x1, 2, attr_getter(&quot;obj_attr&quot;))  # From second object</code></pre>
 <pre><code>## [1] &quot;bar&quot;</code></pre>
+<pre class="r"><code>params &lt;- list(
+  &quot;norm1&quot; = list(&quot;mu&quot; = 0, &quot;sd&quot; = 1),
+  &quot;norm2&quot; = list(&quot;mu&quot; = 1, &quot;sd&quot; = 1),
+  &quot;norm3&quot; = list(&quot;mu&quot; = 2, &quot;scale&quot; = 1)
+)
+params %&gt;% map(&quot;mu&quot;)</code></pre>
+<pre><code>## $norm1
+## [1] 0
+## 
+## $norm2
+## [1] 1
+## 
+## $norm3
+## [1] 2</code></pre>
+<pre class="r"><code>vector &lt;- params %&gt;% map_dbl(&quot;mu&quot;)</code></pre>
+<div id="funciones-predictivas" class="section level3">
+<h3>Funciones Predictivas:</h3>
+<p>Algunas funciones trabajan con funciones predicativas que entregan un único valor TRUE o FALSE.</p>
+<p>keep() y discard() mantienen los elementos de la entrada donde el predicado es TRUE o FALSE, respectivamente. detect() encuentra el primer elemento donde el predicado es verdadero; detect_index() entrega su posición.</p>
+<p>head_while() y tail_while() toman elementos al inicio y final de un vector cuando el predicado es verdadero:</p>
+<pre class="r"><code>flores %&gt;% 
+  keep(is.factor) %&gt;% 
+  str()</code></pre>
+<pre><code>## &#39;data.frame&#39;:    150 obs. of  1 variable:
+##  $ Especies: Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<pre class="r"><code>flores %&gt;% 
+  discard(is.factor) %&gt;% 
+  str()</code></pre>
+<pre><code>## &#39;data.frame&#39;:    150 obs. of  4 variables:
+##  $ Largo.Sepalo: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Ancho.Sepalo: num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Largo.Petalo: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Ancho.Petalo: num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...</code></pre>
+<pre class="r"><code>x &lt;- sample(10)
+x</code></pre>
+<pre><code>##  [1] 10  4  8  1  5  6  2  3  7  9</code></pre>
+<pre class="r"><code>#para encontrar donde se da una cierta condición
+x %&gt;% 
+  detect(~ . &gt; 5)</code></pre>
+<pre><code>## [1] 10</code></pre>
+<pre class="r"><code>x %&gt;% 
+  detect_index(~ . &gt; 5)</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code># If you need to find all values, use keep():
+
+w &lt;- list(
+  list(1, foo = FALSE),
+  list(2, foo = TRUE),
+  list(3, foo = TRUE)
+)
+keep(w, &quot;foo&quot;)</code></pre>
+<pre><code>## [[1]]
+## [[1]][[1]]
+## [1] 2
+## 
+## [[1]]$foo
+## [1] TRUE
+## 
+## 
+## [[2]]
+## [[2]][[1]]
+## [1] 3
+## 
+## [[2]]$foo
+## [1] TRUE</code></pre>
+<pre class="r"><code># si se necesita encontrar todas las posiciones, conviene usar map_lgl():
+
+which(map_lgl(w, &quot;foo&quot;))</code></pre>
+<pre><code>## [1] 2 3</code></pre>
+<pre class="r"><code># o también: 
+
+w %&gt;% 
+  map_lgl(&quot;foo&quot;) %&gt;% 
+  which()</code></pre>
+<pre><code>## [1] 2 3</code></pre>
+<pre class="r"><code># Devuelve elementos desde el principio hasta que uno no pasa...puede ser hacia delante o hacia atras:
+
+x %&gt;% 
+  head_while(~ .x &gt; 5)</code></pre>
+<pre><code>## [1] 10</code></pre>
+<pre class="r"><code>x %&gt;% 
+  tail_while(~ .x &gt; 5)</code></pre>
+<pre><code>## [1] 7 9</code></pre>
 <p><strong>compact()</strong> es un wrapper util para remover los elementos vacios.</p>
 <pre class="r"><code># Using a string instead of a function will select all list elements
 # where that subelement is TRUE
@@ -2472,10 +2515,10 @@ print(&quot;x_nue&quot;)</code></pre>
 <pre class="r"><code>x_nue</code></pre>
 <pre><code>## [[1]]
 ## [[1]]$a
-## [1] TRUE
+## [1] FALSE
 ## 
 ## [[1]]$b
-##  [1]  4  7  2  6  9  5  3  1 10  8
+##  [1]  3  7 10  1  4  5  2  6  8  9
 ## 
 ## 
 ## [[2]]
@@ -2483,31 +2526,31 @@ print(&quot;x_nue&quot;)</code></pre>
 ## [1] TRUE
 ## 
 ## [[2]]$b
-##  [1]  1  7  2  6  9  8  5 10  3  4
+##  [1]  7  6  3  5  4 10  2  9  1  8
 ## 
 ## 
 ## [[3]]
 ## [[3]]$a
-## [1] FALSE
+## [1] TRUE
 ## 
 ## [[3]]$b
-##  [1]  2 10  3  6  5  8  9  7  1  4
+##  [1]  9  6 10  2  8  5  7  1  3  4
 ## 
 ## 
 ## [[4]]
 ## [[4]]$a
-## [1] FALSE
+## [1] TRUE
 ## 
 ## [[4]]$b
-##  [1] 10  1  3  9  8  4  5  2  7  6
+##  [1]  9  8  6  3  4  7  1 10  2  5
 ## 
 ## 
 ## [[5]]
 ## [[5]]$a
-## [1] FALSE
+## [1] TRUE
 ## 
 ## [[5]]$b
-##  [1]  8  5  9  2  4  6  1 10  3  7</code></pre>
+##  [1]  8  3  6  9  7  5  4  2  1 10</code></pre>
 <pre class="r"><code>print(&quot;keep a&quot;)</code></pre>
 <pre><code>## [1] &quot;keep a&quot;</code></pre>
 <pre class="r"><code>x_nue %&gt;% keep(&quot;a&quot;)</code></pre>
@@ -2516,7 +2559,7 @@ print(&quot;x_nue&quot;)</code></pre>
 ## [1] TRUE
 ## 
 ## [[1]]$b
-##  [1]  4  7  2  6  9  5  3  1 10  8
+##  [1]  7  6  3  5  4 10  2  9  1  8
 ## 
 ## 
 ## [[2]]
@@ -2524,7 +2567,23 @@ print(&quot;x_nue&quot;)</code></pre>
 ## [1] TRUE
 ## 
 ## [[2]]$b
-##  [1]  1  7  2  6  9  8  5 10  3  4</code></pre>
+##  [1]  9  6 10  2  8  5  7  1  3  4
+## 
+## 
+## [[3]]
+## [[3]]$a
+## [1] TRUE
+## 
+## [[3]]$b
+##  [1]  9  8  6  3  4  7  1 10  2  5
+## 
+## 
+## [[4]]
+## [[4]]$a
+## [1] TRUE
+## 
+## [[4]]$b
+##  [1]  8  3  6  9  7  5  4  2  1 10</code></pre>
 <pre class="r"><code>print(&quot;discard a&quot;)</code></pre>
 <pre><code>## [1] &quot;discard a&quot;</code></pre>
 <pre class="r"><code>x_nue %&gt;% discard(&quot;a&quot;)</code></pre>
@@ -2533,23 +2592,7 @@ print(&quot;x_nue&quot;)</code></pre>
 ## [1] FALSE
 ## 
 ## [[1]]$b
-##  [1]  2 10  3  6  5  8  9  7  1  4
-## 
-## 
-## [[2]]
-## [[2]]$a
-## [1] FALSE
-## 
-## [[2]]$b
-##  [1] 10  1  3  9  8  4  5  2  7  6
-## 
-## 
-## [[3]]
-## [[3]]$a
-## [1] FALSE
-## 
-## [[3]]$b
-##  [1]  8  5  9  2  4  6  1 10  3  7</code></pre>
+##  [1]  3  7 10  1  4  5  2  6  8  9</code></pre>
 <pre class="r"><code># compact() discards elements that are NULL or that have length zero
 print(&quot;compact&quot;)</code></pre>
 <pre><code>## [1] &quot;compact&quot;</code></pre>
@@ -2560,21 +2603,408 @@ print(&quot;compact&quot;)</code></pre>
 ## 
 ## $d
 ## [1] NA</code></pre>
-<p>flatten(.x) Elimina un nivel de índices de una lista. También flatten_chr, flatten_dbl, flatten_dfc, flatten_dfr, flatten_int, flatten_lgl. flatten(x)</p>
-<p>has_element(.x, .y) ¿Contiene la lista un elemento? has_element(x, “foo”)</p>
-<p>depth(x) Devuelve profundidad (número de niveles o índices). depth(x)</p>
+</div>
+</div>
+<div id="remodelar-listas" class="section level2">
+<h2>Remodelar Listas</h2>
+<p><strong>flatten</strong> Elimina un nivel de índices de una lista. También flatten_chr, flatten_dbl, flatten_dfc, flatten_dfr, flatten_int, flatten_lgl.</p>
+<pre class="r"><code>x &lt;- list(obj1, obj2)
+x5 &lt;- flatten(x)
+x4 &lt;- rerun(2, sample(4)) 
+x4 %&gt;% flatten_int()</code></pre>
+<pre><code>## [1] 1 2 3 4 4 2 3 1</code></pre>
+<p>** Transpose ** Transpone el orden del índice en una multilista. O convierte un par de listas en una lista de pares o una lista de pares en un par de listas. Por ejemplo si tenemos una lista de long. n donde cada componente tiene valores a y b, transpose genera dos listas: a y b cada uno con n elementos. x[[1]] [[2]] es equivalente a transpose(x) [[2]] [[1]]. El primer elemento se utiliza como formato, si el siguiente tiene distinta longitud va a tirar warning.</p>
+<p>transpose(.l, .names = NULL)</p>
+<pre class="r"><code>rerun(5, x = runif(1), y = runif(5))</code></pre>
+<pre><code>## [[1]]
+## [[1]]$x
+## [1] 0.5379354
+## 
+## [[1]]$y
+## [1] 0.3386404 0.0809052 0.3597753 0.1137471 0.3075542
+## 
+## 
+## [[2]]
+## [[2]]$x
+## [1] 0.223164
+## 
+## [[2]]$y
+## [1] 0.22365770 0.97150406 0.12798555 0.85560115 0.06076033
+## 
+## 
+## [[3]]
+## [[3]]$x
+## [1] 0.2222769
+## 
+## [[3]]$y
+## [1] 0.7049291 0.9979506 0.1782865 0.5170853 0.8604875
+## 
+## 
+## [[4]]
+## [[4]]$x
+## [1] 0.3481404
+## 
+## [[4]]$y
+## [1] 0.6778628 0.8153837 0.7649992 0.3937275 0.2966291
+## 
+## 
+## [[5]]
+## [[5]]$x
+## [1] 0.4440744
+## 
+## [[5]]$y
+## [1] 0.16508846 0.11924382 0.87267937 0.04926091 0.11178281</code></pre>
+<pre class="r"><code>x %&gt;% str()</code></pre>
+<pre><code>## List of 2
+##  $ : chr &quot;obj&quot;
+##   ..- attr(*, &quot;obj_attr&quot;)= chr &quot;foo&quot;
+##  $ : chr &quot;obj&quot;
+##   ..- attr(*, &quot;obj_attr&quot;)= chr &quot;bar&quot;</code></pre>
+<pre class="r"><code>x %&gt;% transpose() %&gt;% str()</code></pre>
+<pre><code>## List of 1
+##  $ :List of 2
+##   ..$ : chr &quot;obj&quot;
+##   ..$ : chr &quot;obj&quot;</code></pre>
+<pre class="r"><code># Back to where we started
+x %&gt;% transpose() %&gt;% transpose() %&gt;% str()</code></pre>
+<pre><code>## List of 2
+##  $ :List of 1
+##   ..$ : chr &quot;obj&quot;
+##  $ :List of 1
+##   ..$ : chr &quot;obj&quot;</code></pre>
+<pre class="r"><code># Util con safely() y quietly(): ver chunk safely transpose possibly quietly
+
+# Mejor usar simplify_all() cuando sea posible, para reducir a vectores atómicos
+x &lt;- list(list(a = 1, b = 2), list(a = 3, b = 4), list(a = 5, b = 6))
+x %&gt;% transpose()</code></pre>
+<pre><code>## $a
+## $a[[1]]
+## [1] 1
+## 
+## $a[[2]]
+## [1] 3
+## 
+## $a[[3]]
+## [1] 5
+## 
+## 
+## $b
+## $b[[1]]
+## [1] 2
+## 
+## $b[[2]]
+## [1] 4
+## 
+## $b[[3]]
+## [1] 6</code></pre>
+<pre class="r"><code>x %&gt;% transpose() %&gt;% simplify_all()</code></pre>
+<pre><code>## $a
+## [1] 1 3 5
+## 
+## $b
+## [1] 2 4 6</code></pre>
+<pre class="r"><code>#IMPORTANTE!!!!!
+# Provide explicit component names to prevent loss of those that don&#39;t
+# appear in first component
+ll &lt;- list(
+  list(x = 1, y = &quot;one&quot;),
+  list(z = &quot;deux&quot;, x = 2)
+)
+ll %&gt;% transpose()</code></pre>
+<pre><code>## $x
+## $x[[1]]
+## [1] 1
+## 
+## $x[[2]]
+## [1] 2
+## 
+## 
+## $y
+## $y[[1]]
+## [1] &quot;one&quot;
+## 
+## $y[[2]]
+## NULL</code></pre>
+<pre class="r"><code>nms &lt;- ll %&gt;% map(names) %&gt;% reduce(union)
+ll %&gt;% transpose(.names = nms)</code></pre>
+<pre><code>## $x
+## $x[[1]]
+## [1] 1
+## 
+## $x[[2]]
+## [1] 2
+## 
+## 
+## $y
+## $y[[1]]
+## [1] &quot;one&quot;
+## 
+## $y[[2]]
+## NULL
+## 
+## 
+## $z
+## $z[[1]]
+## NULL
+## 
+## $z[[2]]
+## [1] &quot;deux&quot;</code></pre>
 </div>
 <div id="unir-listas" class="section level2">
 <h2>Unir Listas</h2>
-<p>append(x, values, after = length(x)) Añade al final de una length(x)) Añade al final de una lista. append(x, list(d = 1)) prepend(x, values, before = 1) Añade al principio de una lista. prepend(x, list(d = 1)) splice(…) Combina objetos en una lista, almacena objetos S3 como sub-listas. splice(x, y, “foo”)</p>
+<pre class="r"><code>x7 &lt;- as.list(1:3) 
+x7 %&gt;% append(&quot;a&quot;)  #append(x, values, after = length(x)) Añade al final de una lista.</code></pre>
+<pre><code>## [[1]]
+## [1] 1
+## 
+## [[2]]
+## [1] 2
+## 
+## [[3]]
+## [1] 3
+## 
+## [[4]]
+## [1] &quot;a&quot;</code></pre>
+<pre class="r"><code>x7 %&gt;% prepend(&quot;c&quot;) #Añade al principio de una lista. prepend(x, list(d = 1))</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;c&quot;
+## 
+## [[2]]
+## [1] 1
+## 
+## [[3]]
+## [1] 2
+## 
+## [[4]]
+## [1] 3</code></pre>
+<pre class="r"><code>x7 %&gt;% prepend(list(&quot;a&quot;, &quot;b&quot;), before = 3) </code></pre>
+<pre><code>## [[1]]
+## [1] 1
+## 
+## [[2]]
+## [1] 2
+## 
+## [[3]]
+## [1] &quot;a&quot;
+## 
+## [[4]]
+## [1] &quot;b&quot;
+## 
+## [[5]]
+## [1] 3</code></pre>
+<pre class="r"><code>prepend(list(), x7)</code></pre>
+<pre><code>## [[1]]
+## [1] 1
+## 
+## [[2]]
+## [1] 2
+## 
+## [[3]]
+## [1] 3</code></pre>
+<pre class="r"><code>quesera &lt;- splice(x, y, &quot;foo&quot;)   #no entiendo que hace...</code></pre>
 </div>
+<div id="para-ver-en-otro-momento-falta-tiempo" class="section level1">
+<h1>Para ver en otro momento… falta tiempo</h1>
 <div id="transformar-listas" class="section level2">
 <h2>Transformar listas</h2>
-<p>modify(.x, .f, …) Aplica una función a cada elemento. También map, map_chr, map_dbl, map_dfc, map_dfr, map_int, map_lgl. modify(x, ~.+ 2) modify_at(.x, .at, .f, …) Aplica una función a los elementos por nombre o índice. También map_at. modify_at(x, “b”, ~.+ 2) modify_if(.x, .p, .f, …) Aplica una función a los elementos que pasan una prueba. También map_if. modify_if(x, is.numeric,~.+2) modify_depth(.x,.depth,.f,…) Aplica una función a cada elemento y un nivel dado de una lista. modify_depth(x, 1, ~.+ 2)</p>
+<p>Modify es un tipo de función que siempre devuelve un objeto de igual tipo que la entrada y aplica a cada elemento la función.</p>
+<ul>
+<li>modify() es un atajo de x[[i]] &lt;- f(x[[i]]) Tiene sus variantes:</li>
+<li>modify_if(sólo si cumple predicado)</li>
+<li>modify_at( solo los elementos indicados por nombre o posición)</li>
+<li>modify2 (como map2)</li>
+<li>modify_depth(sólo modifica los elemento hasta un determinado nivel de anidado)</li>
+<li>modify_in(modifica un sólo elemento en la ubicación pluck())</li>
+</ul>
+<pre class="r"><code># Convert factors to characters
+iris %&gt;%
+  modify_if(is.factor, as.character) %&gt;%
+  str()</code></pre>
+<pre><code>## &#39;data.frame&#39;:    150 obs. of  5 variables:
+##  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+##  $ Species     : chr  &quot;setosa&quot; &quot;setosa&quot; &quot;setosa&quot; &quot;setosa&quot; ...</code></pre>
+<pre class="r"><code># Specify which columns to map with a numeric vector of positions or names:
+mtcars %&gt;% modify_at(c(1, 4, 5), as.character) %&gt;% str()</code></pre>
+<pre><code>## &#39;data.frame&#39;:    32 obs. of  11 variables:
+##  $ mpg : chr  &quot;21&quot; &quot;21&quot; &quot;22.8&quot; &quot;21.4&quot; ...
+##  $ cyl : num  6 6 4 6 8 6 8 4 4 6 ...
+##  $ disp: num  160 160 108 258 360 ...
+##  $ hp  : chr  &quot;110&quot; &quot;110&quot; &quot;93&quot; &quot;110&quot; ...
+##  $ drat: chr  &quot;3.9&quot; &quot;3.9&quot; &quot;3.85&quot; &quot;3.08&quot; ...
+##  $ wt  : num  2.62 2.88 2.32 3.21 3.44 ...
+##  $ qsec: num  16.5 17 18.6 19.4 17 ...
+##  $ vs  : num  0 0 1 1 0 1 0 1 1 1 ...
+##  $ am  : num  1 1 1 0 0 0 0 0 0 0 ...
+##  $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
+##  $ carb: num  4 4 1 1 2 1 4 2 2 4 ...</code></pre>
+<pre class="r"><code>mtcars %&gt;% modify_at(c(&quot;cyl&quot;, &quot;am&quot;), as.character) %&gt;% str()</code></pre>
+<pre><code>## &#39;data.frame&#39;:    32 obs. of  11 variables:
+##  $ mpg : num  21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
+##  $ cyl : chr  &quot;6&quot; &quot;6&quot; &quot;4&quot; &quot;6&quot; ...
+##  $ disp: num  160 160 108 258 360 ...
+##  $ hp  : num  110 110 93 110 175 105 245 62 95 123 ...
+##  $ drat: num  3.9 3.9 3.85 3.08 3.15 2.76 3.21 3.69 3.92 3.92 ...
+##  $ wt  : num  2.62 2.88 2.32 3.21 3.44 ...
+##  $ qsec: num  16.5 17 18.6 19.4 17 ...
+##  $ vs  : num  0 0 1 1 0 1 0 1 1 1 ...
+##  $ am  : chr  &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;0&quot; ...
+##  $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
+##  $ carb: num  4 4 1 1 2 1 4 2 2 4 ...</code></pre>
+<pre class="r"><code># Modify at specified depth ---------------------------
+l1 &lt;- list(
+  obj1 = list(
+    prop1 = list(param1 = 1:2, param2 = 3:4),
+    prop2 = list(param1 = 5:6, param2 = 7:8)
+  ),
+  obj2 = list(
+    prop1 = list(param1 = 9:10, param2 = 11:12),
+    prop2 = list(param1 = 12:14, param2 = 15:17)
+  )
+)
+
+# In the above list, &quot;obj&quot; is level 1, &quot;prop&quot; is level 2 and &quot;param&quot;
+# is level 3. To apply sum() on all params, we map it at depth 3:
+l1 %&gt;% modify_depth(3, sum) %&gt;% str()</code></pre>
+<pre><code>## List of 2
+##  $ obj1:List of 2
+##   ..$ prop1:List of 2
+##   .. ..$ param1: int 3
+##   .. ..$ param2: int 7
+##   ..$ prop2:List of 2
+##   .. ..$ param1: int 11
+##   .. ..$ param2: int 15
+##  $ obj2:List of 2
+##   ..$ prop1:List of 2
+##   .. ..$ param1: int 19
+##   .. ..$ param2: int 23
+##   ..$ prop2:List of 2
+##   .. ..$ param1: int 39
+##   .. ..$ param2: int 48</code></pre>
+<pre class="r"><code># Note that vectorised operations will yield the same result when
+# applied at the list level as when applied at the atomic result.
+# The former is more efficient because it takes advantage of
+# vectorisation.
+l1 %&gt;% modify_depth(3, `+`, 100L)</code></pre>
+<pre><code>## $obj1
+## $obj1$prop1
+## $obj1$prop1$param1
+## [1] 101 102
+## 
+## $obj1$prop1$param2
+## [1] 103 104
+## 
+## 
+## $obj1$prop2
+## $obj1$prop2$param1
+## [1] 105 106
+## 
+## $obj1$prop2$param2
+## [1] 107 108
+## 
+## 
+## 
+## $obj2
+## $obj2$prop1
+## $obj2$prop1$param1
+## [1] 109 110
+## 
+## $obj2$prop1$param2
+## [1] 111 112
+## 
+## 
+## $obj2$prop2
+## $obj2$prop2$param1
+## [1] 112 113 114
+## 
+## $obj2$prop2$param2
+## [1] 115 116 117</code></pre>
+<pre class="r"><code>l1 %&gt;% modify_depth(4, `+`, 100L)</code></pre>
+<pre><code>## $obj1
+## $obj1$prop1
+## $obj1$prop1$param1
+## [1] 101 102
+## 
+## $obj1$prop1$param2
+## [1] 103 104
+## 
+## 
+## $obj1$prop2
+## $obj1$prop2$param1
+## [1] 105 106
+## 
+## $obj1$prop2$param2
+## [1] 107 108
+## 
+## 
+## 
+## $obj2
+## $obj2$prop1
+## $obj2$prop1$param1
+## [1] 109 110
+## 
+## $obj2$prop1$param2
+## [1] 111 112
+## 
+## 
+## $obj2$prop2
+## $obj2$prop2$param1
+## [1] 112 113 114
+## 
+## $obj2$prop2$param2
+## [1] 115 116 117</code></pre>
+<pre class="r"><code># modify() lets us pluck the elements prop1/param2 in obj1 and obj2:
+l1 %&gt;% modify(c(&quot;prop1&quot;, &quot;param2&quot;)) %&gt;% str()</code></pre>
+<pre><code>## List of 2
+##  $ obj1: int [1:2] 3 4
+##  $ obj2: int [1:2] 11 12</code></pre>
+<pre class="r"><code># But what if we want to pluck all param2 elements? Then we need to
+# act at a lower level:
+l1 %&gt;% modify_depth(2, &quot;param2&quot;) %&gt;% str()</code></pre>
+<pre><code>## List of 2
+##  $ obj1:List of 2
+##   ..$ prop1: int [1:2] 3 4
+##   ..$ prop2: int [1:2] 7 8
+##  $ obj2:List of 2
+##   ..$ prop1: int [1:2] 11 12
+##   ..$ prop2: int [1:3] 15 16 17</code></pre>
+<pre class="r"><code># modify_depth() can be with other purrr functions to make them operate at
+# a lower level. Here we ask pmap() to map paste() simultaneously over all
+# elements of the objects at the second level. paste() is effectively
+# mapped at level 3.
+l1 %&gt;% modify_depth(2, ~ pmap(., paste, sep = &quot; / &quot;)) %&gt;% str()</code></pre>
+<pre><code>## List of 2
+##  $ obj1:List of 2
+##   ..$ prop1:List of 2
+##   .. ..$ : chr &quot;1 / 3&quot;
+##   .. ..$ : chr &quot;2 / 4&quot;
+##   ..$ prop2:List of 2
+##   .. ..$ : chr &quot;5 / 7&quot;
+##   .. ..$ : chr &quot;6 / 8&quot;
+##  $ obj2:List of 2
+##   ..$ prop1:List of 2
+##   .. ..$ : chr &quot;9 / 11&quot;
+##   .. ..$ : chr &quot;10 / 12&quot;
+##   ..$ prop2:List of 3
+##   .. ..$ : chr &quot;12 / 15&quot;
+##   .. ..$ : chr &quot;13 / 16&quot;
+##   .. ..$ : chr &quot;14 / 17&quot;</code></pre>
 </div>
 <div id="trabajar-con-listas" class="section level2">
 <h2>TRABAJAR CON LISTAS</h2>
-<p>array_tree(array, margin = NULL) Convierte una matriz en una lista. También array_branch. array_tree(x, margin = 3) cross2(.x, .y, .filter = NULL) Todas las combinaciones de .x e .y. También cross, cross3, cross_df. cross2(1:3, 4:6) set_names(x, nm = x) Fija el nombre de un vector/lista directamente o con una función. set_names(x, c(“p”, “q”, “r”)) set_names(x, tolower)</p>
+<pre class="r"><code>#array_tree(array, margin = NULL) #Convierte una matriz en una lista. También array_branch. 
+#array_tree(x7,margin = 3)
+
+#cross2(.x, .y, .filter = NULL) #Todas las combinaciones de .x e .y. También cross, cross3,cross_df. 
+#cross2(1:3, 4:6)
+
+#set_names(x, nm = x)  #Fija el nombre de un vector/lista directamente o con una función.
+
+#set_names(x, c(&quot;p&quot;, &quot;q&quot;, &quot;r&quot;))
+#set_names(x, tolower)</code></pre>
+</div>
 </div>
 
 

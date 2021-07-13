@@ -249,6 +249,12 @@ modelos <- mtautos %>%
 modelos <- mtautos %>% 
   split(.$cilindros) %>% 
   map(~lm(millas ~ peso, data = .x))
+
+mtcars %>%
+  split(.$cyl) %>% # from base R
+  map(~ lm(mpg ~ wt, data = .)) %>%
+  map(summary) %>%
+  map_dbl("r.squared")
 ```
 La sintaxis para crear una función anónima en R es bastante verbosa, por lo que purrr provee un atajo conveniente: una fórmula unilateral.  
 **Hemos usado . como pronombre: se refiere al elemento actual de la lista** (del mismo modo que i se refiere al índice actual en el loop for). .x corresponde al argumento de una función anónima. 
@@ -323,7 +329,8 @@ mtautos %>%
 
 ```
  
-```{r every some none}
+## Resumir Listas: 
+```{r every some none has_element depth}
 
 y <- list(0:10, 5.5)
 y %>% every(is.numeric)
@@ -334,6 +341,13 @@ y %>% some(is.integer)
 #> [1] TRUE
 y %>% none(is.character)
 #> [1] TRUE
+
+
+y %>% has_element(5) #no lo encuentra porque busca elemento completo
+y %>% has_element(0:10) #si lo encuentra porque es el elemento completo
+
+# depth(x) Devuelve profundidad (número de niveles o índices).
+# purrr::depth(y)     no la encuentra como funcion
 ```
 
 ## R Base: lapply() y sapply()
@@ -521,51 +535,6 @@ pwalk(list(paths, plots), ggsave, path = tempdir())
 walk(), walk2() y pwalk() devuelven de forma invisible ., el primer argumento. Esto las hace adecuadas para usar dentro de cadenas de pipes.
 
 
-## Funciones Predictivas:
-Algunas funciones trabajan con funciones predicativas que entregan un único valor TRUE o FALSE.
-
-keep() y discard() mantienen los elementos de la entrada donde el predicado es TRUE o FALSE, respectivamente. detect() encuentra el primer elemento donde el predicado es verdadero; detect_index() entrega su posición.
-
-head_while() y tail_while() toman elementos al inicio y final de un vector cuando el predicado es verdadero:
-
-```{r keep discard }
-flores %>% 
-  keep(is.factor) %>% 
-  str()
-
-flores %>% 
-  discard(is.factor) %>% 
-  str()
-
-x <- sample(10)
-x
-
-x %>% 
-  detect(~ . > 5)
-
-x %>% 
-  detect_index(~ . > 5)
-
-# If you need to find all values, use keep():
-
-w <- list(
-  list(1, foo = FALSE),
-  list(2, foo = TRUE),
-  list(3, foo = TRUE)
-)
-keep(w, "foo")
-
-# If you need to find all positions, use map_lgl():
-which(map_lgl(w, "foo"))
-
-x %>% 
-  head_while(~ .x > 5)
-
-x %>% 
-  tail_while(~ .x > 5)
-
-```
-
 ## Reducir y acumular
 
 La función reduce() (reducir) toma una función “binaria” (e.g. una función con dos inputs primarios) y la aplica repetidamente a una lista hasta que quede un solo elemento.
@@ -625,7 +594,7 @@ s <- every2(letters, function(y) {
 
 ```
 
-## Otras funciones de PURRR:
+## Filtrar listas:
 
 **pluck()** extrae un element de una lista, 
 * por name 
@@ -681,12 +650,79 @@ x1 <- list(obj1, obj2)
 pluck(x1, 1, attr_getter("obj_attr"))  # From first object
 pluck(x1, 2, attr_getter("obj_attr"))  # From second object
 
-```
 
+
+params <- list(
+  "norm1" = list("mu" = 0, "sd" = 1),
+  "norm2" = list("mu" = 1, "sd" = 1),
+  "norm3" = list("mu" = 2, "scale" = 1)
+)
+params %>% map("mu")
+
+vector <- params %>% map_dbl("mu")
+
+
+```
+ 
+### Funciones Predictivas: 
+Algunas funciones trabajan con funciones predicativas que entregan un único valor TRUE o FALSE.
+
+keep() y discard() mantienen los elementos de la entrada donde el predicado es TRUE o FALSE, respectivamente. detect() encuentra el primer elemento donde el predicado es verdadero; detect_index() entrega su posición.
+
+head_while() y tail_while() toman elementos al inicio y final de un vector cuando el predicado es verdadero:
+
+```{r keep discard detect detect_index }
+flores %>% 
+  keep(is.factor) %>% 
+  str()
+
+flores %>% 
+  discard(is.factor) %>% 
+  str()
+
+x <- sample(10)
+x
+
+
+#para encontrar donde se da una cierta condición
+x %>% 
+  detect(~ . > 5)
+
+x %>% 
+  detect_index(~ . > 5)
+
+# If you need to find all values, use keep():
+
+w <- list(
+  list(1, foo = FALSE),
+  list(2, foo = TRUE),
+  list(3, foo = TRUE)
+)
+keep(w, "foo")
+
+# si se necesita encontrar todas las posiciones, conviene usar map_lgl():
+
+which(map_lgl(w, "foo"))
+
+# o también: 
+
+w %>% 
+  map_lgl("foo") %>% 
+  which()
+
+# Devuelve elementos desde el principio hasta que uno no pasa...puede ser hacia delante o hacia atras:
+
+x %>% 
+  head_while(~ .x > 5)
+
+x %>% 
+  tail_while(~ .x > 5)
+
+```
 
 **compact()** es un wrapper util para remover los elementos vacios. 
 
-```{r keep discacr compact}
+```{r keep discard compact}
 # Using a string instead of a function will select all list elements
 # where that subelement is TRUE
 x_nue <- rerun(5, a = rbernoulli(1), b = sample(10))
@@ -703,69 +739,136 @@ print("compact")
 list(a = "a", b = NULL, c = integer(0), d = NA, e = list()) %>%
   compact()
 ```
+## Remodelar Listas
+
+**flatten** Elimina un nivel de índices de una lista.
+También flatten_chr, flatten_dbl, flatten_dfc, flatten_dfr, flatten_int, flatten_lgl. 
 
 
+```{r flatten}
+x <- list(obj1, obj2)
+x5 <- flatten(x)
+x4 <- rerun(2, sample(4)) 
+x4 %>% flatten_int()
+```
 
-flatten(.x) Elimina un nivel
-de índices de una lista.
-También flatten_chr,
-flatten_dbl, flatten_dfc,
-flatten_dfr, flatten_int,
-flatten_lgl. flatten(x)
+** Transpose ** Transpone el orden del índice en una multilista. O convierte un par de listas en una lista de pares o una lista de pares en un par de  listas. 
+Por ejemplo si tenemos una lista de long. n donde cada componente tiene valores a y b, transpose genera dos listas: a y b cada uno con n elementos. 
+x[[1]] [[2]] es equivalente a transpose(x) [[2]] [[1]].
+El primer elemento se utiliza como formato, si el siguiente tiene distinta longitud va a tirar warning.
 
-has_element(.x, .y) ¿Contiene
-la lista un elemento?
-has_element(x, "foo")
+transpose(.l, .names = NULL)
 
-depth(x) Devuelve profundidad
-(número de niveles o índices).
-depth(x)
+```{r transpose}
+rerun(5, x = runif(1), y = runif(5))
+x %>% str()
+x %>% transpose() %>% str()
+# Back to where we started
+x %>% transpose() %>% transpose() %>% str()
+
+# Util con safely() y quietly(): ver chunk safely transpose possibly quietly
+
+# Mejor usar simplify_all() cuando sea posible, para reducir a vectores atómicos
+x <- list(list(a = 1, b = 2), list(a = 3, b = 4), list(a = 5, b = 6))
+x %>% transpose()
+x %>% transpose() %>% simplify_all()
+
+#IMPORTANTE!!!!!
+# Provide explicit component names to prevent loss of those that don't
+# appear in first component
+ll <- list(
+  list(x = 1, y = "one"),
+  list(z = "deux", x = 2)
+)
+ll %>% transpose()
+nms <- ll %>% map(names) %>% reduce(union)
+ll %>% transpose(.names = nms)
+```
 
 ## Unir Listas
-append(x, values, after =
-length(x)) Añade al final de una
-length(x)) Añade al final de una
-lista. append(x, list(d = 1))
-prepend(x, values, before = 1)
-Añade al principio de una lista.
-prepend(x, list(d = 1))
-splice(…) Combina objetos en
-una lista, almacena objetos S3
-como sub-listas. splice(x, y, "foo")
 
+
+```{r append prepend length splice}
+x7 <- as.list(1:3) 
+x7 %>% append("a")  #append(x, values, after = length(x)) Añade al final de una lista.
+x7 %>% prepend("c") #Añade al principio de una lista. prepend(x, list(d = 1))
+x7 %>% prepend(list("a", "b"), before = 3) 
+prepend(list(), x7)
+quesera <- splice(x, y, "foo")   #no entiendo que hace...
+```
+# Para ver en otro momento... falta tiempo
 ## Transformar listas
-modify(.x, .f, ...) Aplica una
-función a cada elemento. También
-map, map_chr, map_dbl,
-map_dfc, map_dfr, map_int,
-map_lgl. modify(x, ~.+ 2)
-modify_at(.x, .at, .f, ...) Aplica una
-función a los elementos por
-nombre o índice. También
-map_at. modify_at(x, "b", ~.+ 2)
-modify_if(.x, .p, .f, ...) Aplica una
-función a los elementos que
-pasan una prueba. También
-map_if.
-modify_if(x, is.numeric,~.+2)
-modify_depth(.x,.depth,.f,...)
-Aplica una función a cada
-elemento y un nivel dado de una
-lista. modify_depth(x, 1, ~.+ 2)
+Modify es un tipo de función que siempre devuelve un objeto de igual tipo que la entrada y aplica a cada elemento la función.
+
+* modify() es un atajo de x[[i]] <- f(x[[i]])
+Tiene sus variantes: 
+* modify_if(sólo si cumple predicado)
+* modify_at( solo los elementos indicados por nombre o posición)
+* modify2 (como map2)
+* modify_depth(sólo modifica los elemento hasta un determinado nivel de anidado)
+* modify_in(modifica un sólo elemento en la ubicación pluck())
+
+```{r modify}
+# Convert factors to characters
+iris %>%
+  modify_if(is.factor, as.character) %>%
+  str()
+
+# Specify which columns to map with a numeric vector of positions or names:
+mtcars %>% modify_at(c(1, 4, 5), as.character) %>% str()
+mtcars %>% modify_at(c("cyl", "am"), as.character) %>% str()
+
+# Modify at specified depth ---------------------------
+l1 <- list(
+  obj1 = list(
+    prop1 = list(param1 = 1:2, param2 = 3:4),
+    prop2 = list(param1 = 5:6, param2 = 7:8)
+  ),
+  obj2 = list(
+    prop1 = list(param1 = 9:10, param2 = 11:12),
+    prop2 = list(param1 = 12:14, param2 = 15:17)
+  )
+)
+
+# In the above list, "obj" is level 1, "prop" is level 2 and "param"
+# is level 3. To apply sum() on all params, we map it at depth 3:
+l1 %>% modify_depth(3, sum) %>% str()
+
+# Note that vectorised operations will yield the same result when
+# applied at the list level as when applied at the atomic result.
+# The former is more efficient because it takes advantage of
+# vectorisation.
+l1 %>% modify_depth(3, `+`, 100L)
+l1 %>% modify_depth(4, `+`, 100L)
+
+# modify() lets us pluck the elements prop1/param2 in obj1 and obj2:
+l1 %>% modify(c("prop1", "param2")) %>% str()
+
+# But what if we want to pluck all param2 elements? Then we need to
+# act at a lower level:
+l1 %>% modify_depth(2, "param2") %>% str()
+
+# modify_depth() can be with other purrr functions to make them operate at
+# a lower level. Here we ask pmap() to map paste() simultaneously over all
+# elements of the objects at the second level. paste() is effectively
+# mapped at level 3.
+l1 %>% modify_depth(2, ~ pmap(., paste, sep = " / ")) %>% str()
+
+```
+
 
 ## TRABAJAR CON LISTAS
-array_tree(array, margin =
-NULL) Convierte una matriz en
-una lista. También
-array_branch. array_tree(x,
-margin = 3)
-cross2(.x, .y, .filter = NULL)
-Todas las combinaciones de .x
-e .y. También cross, cross3,
-cross_df. cross2(1:3, 4:6)
-set_names(x, nm = x) Fija el
-nombre de un vector/lista
-directamente o con una función.
-set_names(x, c("p", "q", "r"))
-set_names(x, tolower)
+```{r array_tree array_branch cross2 set_namse}
+#array_tree(array, margin = NULL) #Convierte una matriz en una lista. También array_branch. 
+#array_tree(x7,margin = 3)
+
+#cross2(.x, .y, .filter = NULL) #Todas las combinaciones de .x e .y. También cross, cross3,cross_df. 
+#cross2(1:3, 4:6)
+
+#set_names(x, nm = x)  #Fija el nombre de un vector/lista directamente o con una función.
+
+#set_names(x, c("p", "q", "r"))
+#set_names(x, tolower)
+```
+
 
